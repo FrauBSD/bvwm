@@ -1371,7 +1371,11 @@ void frame_get_titlebar_dimensions(
 	tb_thick = fw->title_thickness;
 	nbuttons = fw->nr_left_buttons + fw->nr_right_buttons;
 	nbuttons_big = 0;
-	b_length = tb_thick;
+	/* Non-zero TitleStyle ButtonWidth => rectangular hitboxes. */
+	if (fw->decor != NULL && fw->decor->title_button_width > 0)
+		b_length = fw->decor->title_button_width;
+	else
+		b_length = tb_thick;
 	t_length = tb_length - nbuttons * b_length;
 	if (nbuttons > 0 && t_length < MIN_WINDOW_TITLE_LENGTH)
 	{

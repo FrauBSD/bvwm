@@ -624,6 +624,34 @@ static void do_title_style(F_CMD_ARGS, Bool do_add)
 			if (action)
 				action += next;
 		}
+		else if (!do_add && StrEquals(parm, "ButtonWidth"))
+		{
+			int width = 0;
+			int next = 0;
+
+			/*
+			 * Along-title length of each titlebar button hitbox.
+			 * Default 0 keeps stock square buttons (side =
+			 * title thickness). Allows rectangular chrome
+			 * (e.g. Height 32 ButtonWidth 46) without raising
+			 * the whole titlebar.
+			 */
+			if (!action ||
+			    sscanf(action, "%d%n", &width, &next) <= 0 ||
+			    width < 0 || width > 512)
+			{
+				fvwm_debug(__func__,
+					   "bad ButtonWidth (0..512, 0=square)");
+				width = 0;
+			}
+			if (decor->title_button_width != width)
+			{
+				decor->title_button_width = width;
+				decor->flags.has_title_height_changed = 1;
+			}
+			if (action)
+				action += next;
+		}
 		else
 		{
 			action = ReadTitleButton(
