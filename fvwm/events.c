@@ -194,6 +194,7 @@ static event_group_t *base_event_group = NULL;
 
 int last_event_type = 0;
 Window PressedW = None;
+Window HoverW = None;
 
 /* ---------------------------- local functions ---------------------------- */
 
@@ -2086,6 +2087,44 @@ void HandleEnterNotify(const evh_args_t *ea)
 	}
 	if (fw)
 	{
+		int i;
+		Window w = ewp->window;
+
+		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
+		{
+			if (FW_W_BUTTON(fw, i) == w)
+			{
+				if (HoverW != w)
+				{
+					HoverW = w;
+					border_draw_decorations(
+						fw, PART_BUTTONS,
+						(Scr.Hilite == fw), True,
+						CLEAR_ALL, NULL, NULL);
+				}
+				return;
+			}
+		}
+		if (HoverW != None &&
+		    (w == FW_W_FRAME(fw) || w == FW_W_PARENT(fw) ||
+		     w == FW_W(fw) || w == FW_W_TITLE(fw)))
+		{
+			for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
+			{
+				if (FW_W_BUTTON(fw, i) == HoverW)
+				{
+					HoverW = None;
+					border_draw_decorations(
+						fw, PART_BUTTONS,
+						(Scr.Hilite == fw), True,
+						CLEAR_ALL, NULL, NULL);
+					break;
+				}
+			}
+		}
+	}
+	if (fw)
+	{
 		if (ewp->window != FW_W_FRAME(fw) &&
 		    ewp->window != FW_W_PARENT(fw) &&
 		    ewp->window != FW_W(fw) &&
@@ -2794,6 +2833,26 @@ void HandleLeaveNotify(const evh_args_t *ea)
 	if (Scr.flags.is_wire_frame_displayed)
 	{
 		return;
+	}
+	if (fw && lwp->mode == NotifyNormal)
+	{
+		int i;
+
+		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
+		{
+			if (FW_W_BUTTON(fw, i) == lwp->window)
+			{
+				if (HoverW == lwp->window)
+				{
+					HoverW = None;
+					border_draw_decorations(
+						fw, PART_BUTTONS,
+						(Scr.Hilite == fw), True,
+						CLEAR_ALL, NULL, NULL);
+				}
+				return;
+			}
+		}
 	}
 	if (lwp->mode != NotifyNormal)
 	{

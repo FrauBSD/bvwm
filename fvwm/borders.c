@@ -59,6 +59,7 @@
 /* ---------------------------- imports ------------------------------------ */
 
 extern Window PressedW;
+extern Window HoverW;
 
 /* ---------------------------- included code files ------------------------ */
 
@@ -288,7 +289,7 @@ static Bool is_button_toggled(
 
 /* rules to get button state */
 static ButtonState border_flags_to_button_state(
-	int is_pressed, int is_lit, int is_toggled)
+	int is_pressed, int is_lit, int is_toggled, int is_hover)
 {
 	if (!is_lit && Scr.gs.use_inactive_buttons)
 	{
@@ -296,6 +297,11 @@ static ButtonState border_flags_to_button_state(
 		{
 			return (is_toggled) ?
 				BS_ToggledInactiveDown : BS_InactiveDown;
+		}
+		else if (is_hover)
+		{
+			return (is_toggled) ?
+				BS_ToggledInactiveHover : BS_InactiveHover;
 		}
 		else
 		{
@@ -309,6 +315,11 @@ static ButtonState border_flags_to_button_state(
 		{
 			return (is_toggled) ?
 				BS_ToggledActiveDown : BS_ActiveDown;
+		}
+		else if (is_hover)
+		{
+			return (is_toggled) ?
+				BS_ToggledActiveHover : BS_ActiveHover;
 		}
 		else
 		{
@@ -714,7 +725,7 @@ static window_parts border_get_tb_parts_to_draw(
 	/* check if state changed */
 	old_state = border_flags_to_button_state(
 		(fw->decor_state.parts_inverted & PART_TITLE),
-		(fw->decor_state.parts_lit & PART_TITLE), 0);
+		(fw->decor_state.parts_lit & PART_TITLE), 0, 0);
 	if (old_state != td->tbstate.tstate)
 	{
 		draw_parts |= PART_TITLE;
@@ -738,7 +749,8 @@ static window_parts border_get_tb_parts_to_draw(
 		old_state = border_flags_to_button_state(
 			(fw->decor_state.buttons_inverted & mask),
 			(fw->decor_state.buttons_lit & mask),
-			(fw->decor_state.buttons_toggled & mask));
+			(fw->decor_state.buttons_toggled & mask),
+			(FW_W_BUTTON(fw, i) == HoverW));
 		if (old_state != td->tbstate.bstate[i])
 		{
 			draw_parts |= PART_BUTTONS;
@@ -4331,10 +4343,11 @@ static void border_get_titlebar_descr_state(
 		tbstate->bstate[i] = border_flags_to_button_state(
 			tbstate->pressed_bmask & mask,
 			tbstate->lit_bmask & mask,
-			tbstate->toggled_bmask & mask);
+			tbstate->toggled_bmask & mask,
+			(FW_W_BUTTON(fw, i) == HoverW));
 	}
 	tbstate->tstate = border_flags_to_button_state(
-		tbstate->is_title_pressed, tbstate->is_title_lit, 0);
+		tbstate->is_title_pressed, tbstate->is_title_lit, 0, 0);
 }
 
 static window_parts border_get_titlebar_descr(
@@ -4741,7 +4754,7 @@ int border_is_using_border_style(
 
 	/* title */
 	is_pressed = (FW_W_TITLE(fw) == PressedW);
-	bs = border_flags_to_button_state(is_pressed, has_focus, 0);
+	bs = border_flags_to_button_state(is_pressed, has_focus, 0, 0);
 	if (DFS_USE_BORDER_STYLE(TB_STATE(GetDecor(fw, titlebar))[bs].style))
 	{
 		return 1;
@@ -4755,7 +4768,8 @@ int border_is_using_border_style(
 		is_pressed = (FW_W_BUTTON(fw, i) == PressedW);
 		is_toggled = (is_button_toggled(fw, i) == True);
 		bs = border_flags_to_button_state(
-			is_pressed, (has_focus == True), is_toggled);
+			is_pressed, (has_focus == True), is_toggled,
+			(FW_W_BUTTON(fw, i) == HoverW));
 		if (DFS_USE_BORDER_STYLE(
 			    TB_STATE(GetDecor(fw, buttons[i]))[bs].style))
 		{
