@@ -19,6 +19,8 @@ Branch: `bvwm-1.1.5`
 - **TitleStyle ButtonWidth** — along-title button length independent of title
   thickness (`0` keeps stock square buttons). Enables wider hitboxes without
   raising the whole titlebar.
+- **Config paths** — default user dir `~/.bvwm` and compat rc `.bvwmrc` so
+  BVWM-only directives are not loaded by stock fvwm3 via `.fvwm2rc`.
 
 ### Packaging intent
 

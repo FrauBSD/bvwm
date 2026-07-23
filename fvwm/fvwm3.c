@@ -1728,7 +1728,8 @@ int main(int argc, char **argv)
 	{
 		char *s;
 
-		xasprintf(&fvwm_userdir, "%s/.fvwm", home_dir);
+		/* BVWM: do not share ~/.fvwm with stock fvwm3. */
+		xasprintf(&fvwm_userdir, "%s/.bvwm", home_dir);
 		/* Put the user directory into the environment so it can be used
 		 * later everywhere. */
 		xasprintf(&s, "FVWM_USERDIR=%s", fvwm_userdir);
@@ -2309,15 +2310,15 @@ int main(int argc, char **argv)
 	else
 	{
 		/* Run startup command file in these places (default prefix):
-		 *   ~/.fvwm/config
-		 *   /usr/local/share/fvwm/config
+		 *   ~/.bvwm/config
+		 *   $FVWM_DATADIR/config
 		 * and for compatibility:
-		 *   ~/.fvwm/.fvwm2rc
-		 *   /usr/local/share/fvwm/system.fvwm2rc
+		 *   ~/.bvwm/.bvwmrc
+		 *   $FVWM_DATADIR/system.bvwmrc
 		 * and for compatibility to be discontinued:
-		 *   ~/.fvwm2rc,
-		 *   /usr/local/share/fvwm/.fvwm2rc
-		 *   /usr/local/etc/system.fvwm2rc
+		 *   ~/.bvwmrc,
+		 *   $FVWM_DATADIR/.bvwmrc
+		 *   $FVWM_CONFDIR/system.bvwmrc
 		 */
 		int upper = 8;
 		int nl = -1, tries = 0;

@@ -57,6 +57,20 @@ Behavioral changes in this tree (see `BCHANGELOG.md`), including:
 Default config filename may grow a BVWM-specific name later (e.g. `.bvwmrc`);
 until then, expect fvwm3-compatible rc naming unless the port wraps it.
 
+## Config paths (BVWM vs stock fvwm3)
+
+BVWM defaults differ so Hover / ButtonWidth (and later extras) never land in a
+file stock **fvwm3** tries to parse:
+
+| | BVWM | stock fvwm3 |
+|--|------|-------------|
+| User dir | `~/.bvwm` (`FVWM_USERDIR`) | `~/.fvwm` |
+| Compat rc | `.bvwmrc` | `.fvwm2rc` |
+
+Search order still prefers `config` under the user dir / datadir, then `.bvwmrc`
+locations, then packaged defaults. Keep a stock-safe `~/.fvwm2rc` (or none) for
+`fvwm3`; put BVWM chrome in `~/.bvwmrc` or `~/.bvwm/config`.
+
 ## Building
 
 Same as upstream fvwm3 (meson). See `INSTALL.md`.
