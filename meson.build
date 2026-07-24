@@ -74,7 +74,7 @@ endif
 conf.set_quoted('VERSION', meson.project_version())
 conf.set_quoted('VERSIONINFO', fvwm_vcs_versioninfo)
 conf.set_quoted('PACKAGE', meson.project_name())
-/* BVWM: keep stock fvwm3 on .fvwm2rc — our decor extras are not valid there. */
+# BVWM: keep stock fvwm3 on .fvwm2rc — our decor extras are not valid there.
 conf.set_quoted('FVWM2RC', '.bvwmrc')
 conf.set_quoted('FVWM_CONFIG', 'config')
 conf.set_quoted(
