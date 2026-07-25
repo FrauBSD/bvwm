@@ -1,4 +1,5 @@
 adoc_sources = [
+    'bvwm.adoc',
     'fvwm-convert-2.6.adoc',
     'fvwm-menu-desktop.adoc',
     'fvwm-menu-directory.adoc',

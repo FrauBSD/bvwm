@@ -1,0 +1,95 @@
+= BVWM(1)
+
+== NAME
+
+bvwm - B? Virtual Window Manager for X11
+
+== SYNOPSIS
+
+*bvwm* [ options ]
+
+== DESCRIPTION
+
+*bvwm* is a fork of *fvwm3* maintained by the FrauBSD Project.  The
+binary is the fvwm3 core window manager built with BVWM decor
+extensions and BVWM-specific default configuration paths; it accepts
+exactly the same command-line options as *fvwm3*(1).
+
+BVWM ships as a thin product: only the core *bvwm* binary diverges from
+stock fvwm3.  Modules (*FvwmButtons*, *FvwmPager*, and friends), shared
+data files, and the module man pages are provided by a stock *fvwm3*
+installation, and module vocabulary in configuration files is unchanged
+(for example `Module FvwmButtons`).
+
+== CONFIGURATION FILES
+
+BVWM reads its own configuration paths so that BVWM-only directives are
+never loaded by a stock fvwm3 session sharing the same home directory.
+In order, the first file found is used:
+
+....
+$FVWM_USERDIR/config        (default $HOME/.bvwm/config)
+$FVWM_DATADIR/config
+$FVWM_USERDIR/.bvwmrc
+$FVWM_DATADIR/system.bvwmrc
+$HOME/.bvwmrc
+$FVWM_DATADIR/.bvwmrc
+$FVWM_CONFDIR/system.bvwmrc
+....
+
+Keep a stock-safe `~/.fvwm2rc` (or none) for *fvwm3*; put BVWM chrome
+in `~/.bvwm/config` or `~/.bvwmrc`.  Both window managers can be
+installed and used side by side.
+
+== DIVERGENCES FROM FVWM3
+
+In addition to the configuration paths above, this tree extends the
+decor engine.  Directives below are not understood by stock fvwm3 and
+must live in BVWM-only configuration files.
+
+=== ButtonStyle hover states
+
+*ButtonStyle* accepts hover variants of the standard button states, so
+titlebar buttons can highlight when the pointer is over them without a
+press:
+
+....
+ActiveHover           ActiveDownHover
+InactiveHover         InactiveDownHover
+ToggledActiveHover    ToggledActiveDownHover
+ToggledInactiveHover  ToggledInactiveDownHover
+....
+
+Decor-button enter and leave events are tracked so the hover state is
+rendered live under the pointer.
+
+=== TitleStyle ButtonWidth
+
+....
+TitleStyle Height 32 ButtonWidth 46
+....
+
+*ButtonWidth* sets the along-title length of each titlebar button
+hitbox, in pixels (0 to 512), independent of the title thickness.  The
+default of 0 keeps stock square buttons whose side equals the title
+thickness.  This permits wide, rectangular button hitboxes without
+raising the whole titlebar.
+
+== ENVIRONMENT
+
+*FVWM_USERDIR*::
+User configuration directory.  Defaults to `$HOME/.bvwm` (stock fvwm3
+defaults to `$HOME/.fvwm`).
+
+== SEE ALSO
+
+*fvwm3*(1), *fvwm3styles*(1), *fvwm3commands*(1)
+
+Project page: https://github.com/FrauBSD/bvwm
+
+== AUTHORS
+
+fvwm3 is the work of the fvwm workers (see *fvwm3*(1)).
+
+The BVWM fork is maintained by Devin Teske <dteske@FreeBSD.org> for the
+FrauBSD Project.
