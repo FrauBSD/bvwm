@@ -84,8 +84,8 @@ AddToFunc   StartFunction
 DestroyFunc InitBackground
 AddToFunc InitBackground
 + I Test (f $[FVWM_USERDIR]/.BGdefault) \
-    Exec exec fvwm-root $[FVWM_USERDIR]/.BGdefault
-+ I TestRc (NoMatch) Exec exec fvwm-root \
+    Exec exec bvwm-root $[FVWM_USERDIR]/.BGdefault
++ I TestRc (NoMatch) Exec exec bvwm-root \
     $[FVWM_DATADIR]/default-config/images/background/bg1.png
 
 # Mouse Bindings Functions
@@ -121,17 +121,17 @@ AddToFunc   ViewManPage
 #
 # SetBG is used with the background menu to set the background
 # image and configure it to be loaded the next time fvwm is run.
-# Note, fvwm-root can't use .jpeg or resize images. Use something
+# Note, bvwm-root can't use .jpeg or resize images. Use something
 # like display, feh, etc.
 DestroyFunc SetBG
 AddToFunc   SetBG
 + I Test (f $[FVWM_USERDIR]/images/background/$0) \
-    Exec exec fvwm-root $[FVWM_USERDIR]/images/background/$0
+    Exec exec bvwm-root $[FVWM_USERDIR]/images/background/$0
 + I TestRc (Match) Exec exec ln -fs images/background/$0 \
     $[FVWM_USERDIR]/.BGdefault
 + I TestRc (Match) Break
 + I Test (!f $[FVWM_DATADIR]/default-config/images/background/$0) Break
-+ I Exec exec fvwm-root $[FVWM_DATADIR]/default-config/images/background/$0
++ I Exec exec bvwm-root $[FVWM_DATADIR]/default-config/images/background/$0
 + I Exec exec ln -fs $[FVWM_DATADIR]/default-config/images/background/$0 \
     $[FVWM_USERDIR]/.BGdefault
 
@@ -325,7 +325,7 @@ AddToMenu   MenuFvwmRoot "Fvwm" Title
 + "&XTerm%icons/terminal.png%"          Exec exec $[infostore.terminal]
 Test (x $[infostore.runcmd]) + "R&un Command%icons/run_arrow.png%" Exec exec $[infostore.runcmd] $[infostore.runcmdopt]
 + "" Nop
-Test (x FvwmPrompt) + "&FvwmPrompt%icons/terminal.png%" Exec exec $[infostore.terminal] -e FvwmPrompt
+Test (x bvwm-FvwmPrompt) + "&bvwm-FvwmPrompt%icons/terminal.png%" Exec exec $[infostore.terminal] -e bvwm-FvwmPrompt
 + "$[gt.&Wallpapers]%icons/wallpaper.png%" Popup BGMenu
 + "$[gt.M&an Pages]%icons/help.png%"       Popup MenuFvwmManPages
 + "$[gt.Cop&y Config]%icons/conf.png%"     FvwmScript FvwmScript-ConfirmCopyConfig
@@ -335,7 +335,7 @@ Test (x FvwmPrompt) + "&FvwmPrompt%icons/terminal.png%" Exec exec $[infostore.te
 + "$[gt.&Quit]%icons/quit.png%"       Module FvwmScript FvwmScript-ConfirmQuit
 
 # Generate XDGMenu
-PipeRead "fvwm-menu-desktop -e"
+PipeRead "bvwm-menu-desktop -e"
 
 # Programs Menu
 #
@@ -443,30 +443,30 @@ AddToMenu   MenuSendToPage
 # Fvwm Man Pages (Help) Menu
 DestroyMenu MenuFvwmManPages
 AddToMenu   MenuFvwmManPages "Help" Title
-+ "fvwm3"         ViewManPage fvwm3
-+ "fvwm3commands" ViewManPage fvwm3commands
-+ "fvwm3styles"   ViewManPage fvwm3styles
-+ "fvwm3menus"    ViewManPage fvwm3menus
-+ "fvwm3all"      ViewManPage fvwm3all
++ "bvwm"         ViewManPage bvwm
++ "bvwmcommands" ViewManPage bvwmcommands
++ "bvwmstyles"   ViewManPage bvwmstyles
++ "bvwmmenus"    ViewManPage bvwmmenus
++ "bvwmall"      ViewManPage bvwmall
 + "" Nop
-+ "FvwmAnimate"   ViewManPage FvwmAnimate
-+ "FvwmAuto"      ViewManPage FvwmAuto
-+ "FvwmBacker"    ViewManPage FvwmBacker
-+ "FvwmButtons"   ViewManPage FvwmButtons
-+ "FvwmCommand"   ViewManPage FvwmCommand
-+ "FvwmEvent"     ViewManPage FvwmEvent
-+ "FvwmIconMan"   ViewManPage FvwmIconMan
-+ "FvwmIdent"     ViewManPage FvwmIdent
-+ "FvwmPager"     ViewManPage FvwmPager
-+ "FvwmPerl"      ViewManPage FvwmPerl
-Test (x FvwmPrompt) + "FvwmPrompt" ViewManPage FvwmPrompt
-+ "FvwmRearrange" ViewManPage FvwmRearrange
-+ "FvwmScript"    ViewManPage FvwmScript
++ "bvwm-FvwmAnimate"   ViewManPage bvwm-FvwmAnimate
++ "bvwm-FvwmAuto"      ViewManPage bvwm-FvwmAuto
++ "bvwm-FvwmBacker"    ViewManPage bvwm-FvwmBacker
++ "bvwm-FvwmButtons"   ViewManPage bvwm-FvwmButtons
++ "bvwm-FvwmCommand"   ViewManPage bvwm-FvwmCommand
++ "bvwm-FvwmEvent"     ViewManPage bvwm-FvwmEvent
++ "bvwm-FvwmIconMan"   ViewManPage bvwm-FvwmIconMan
++ "bvwm-FvwmIdent"     ViewManPage bvwm-FvwmIdent
++ "bvwm-FvwmPager"     ViewManPage bvwm-FvwmPager
++ "bvwm-FvwmPerl"      ViewManPage bvwm-FvwmPerl
+Test (x bvwm-FvwmPrompt) + "bvwm-FvwmPrompt" ViewManPage bvwm-FvwmPrompt
++ "bvwm-FvwmRearrange" ViewManPage bvwm-FvwmRearrange
++ "bvwm-FvwmScript"    ViewManPage bvwm-FvwmScript
 + "" Nop
-+ "fvwm-root"           ViewManPage fvwm-root
-+ "fvwm-menu-desktop"   ViewManPage fvwm-menu-desktop
-+ "fvwm-menu-directory" ViewManPage fvwm-menu-directory
-+ "fvwm-menu-xlock"     ViewManPage fvwm-menu-xlock
++ "bvwm-root"           ViewManPage bvwm-root
++ "bvwm-menu-desktop"   ViewManPage bvwm-menu-desktop
++ "bvwm-menu-directory" ViewManPage bvwm-menu-directory
++ "bvwm-menu-xlock"     ViewManPage bvwm-menu-xlock
 
 #######
 # 5: Mouse and Key bindings

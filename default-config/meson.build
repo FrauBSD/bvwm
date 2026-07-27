@@ -1,6 +1,6 @@
 default_confdir = join_paths(
     get_option('datadir'),
-    meson.project_name(),
+    bvwm_name,
     'default-config',
 )
 

@@ -1,6 +1,6 @@
 install_data(
     'ConfigFvwmIdent',
-    install_dir: join_paths(datadir, meson.project_name()),
+    install_dir: join_paths(datadir, bvwm_name),
 )
 
 executable(

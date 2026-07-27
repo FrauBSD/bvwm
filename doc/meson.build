@@ -6,7 +6,7 @@ adoc_sources = [
     'fvwm-menu-xlock.adoc',
     'fvwm-perllib.adoc',
     'fvwm-root.adoc',
-    'fvwm3.adoc',
+    # BVWM: skip fvwm3.adoc — bvwm.adoc is the primary WM man page.
     'fvwm3all.adoc',
     'FvwmAnimate.adoc',
     'FvwmAuto.adoc',
@@ -71,7 +71,7 @@ if get_option('htmldoc')
     if get_option('docdir') != ''
         htmldir = get_option('docdir') / 'html'
     else
-        htmldir = get_option('datadir') / 'doc' / meson.project_name() / 'html'
+        htmldir = get_option('datadir') / 'doc' / bvwm_name / 'html'
     endif
 
     index_src = 'index.adoc.in'
@@ -170,13 +170,19 @@ endif
 
 man_pages = []
 if get_option('mandoc')
-    # Each of the mans in the current makefile gets installed to man1
+    # BVWM: install mans under coinstallable names (bvwm-FvwmAnimate.1, …).
     foreach source : adoc_sources
-        dest = source.replace('.adoc', '.1')
-        doc_name_attribute = source.replace(
-            '.adoc',
-            '',
-        )
+        base = source.replace('.adoc', '')
+        if base.startswith('Fvwm')
+            man_base = 'bvwm-' + base
+        elif base.startswith('fvwm-')
+            man_base = base.replace('fvwm-', 'bvwm-')
+        elif base.startswith('fvwm3')
+            man_base = base.replace('fvwm3', 'bvwm')
+        else
+            man_base = base
+        endif
+        dest = man_base + '.1'
         man_pages += custom_target(
             dest,
             input: source,
@@ -184,7 +190,7 @@ if get_option('mandoc')
             command: [
                 asciidoc,
                 '-b', 'manpage',
-                '-a', doc_name_attribute,
+                '-a', man_base,
                 '-o', '@OUTPUT@',
                 '@INPUT@',
             ],
@@ -194,11 +200,17 @@ if get_option('mandoc')
     endforeach
 
     foreach source : late_docs_targets
-        dest = source.full_path().split('/')[-1].replace('.adoc', '.1')
-        doc_name_attribute = source.full_path().split('/')[-1].replace(
-            '.adoc',
-            '',
-        )
+        base = source.full_path().split('/')[-1].replace('.adoc', '')
+        if base.startswith('Fvwm')
+            man_base = 'bvwm-' + base
+        elif base.startswith('fvwm-')
+            man_base = base.replace('fvwm-', 'bvwm-')
+        elif base.startswith('fvwm3')
+            man_base = base.replace('fvwm3', 'bvwm')
+        else
+            man_base = base
+        endif
+        dest = man_base + '.1'
         man_pages += custom_target(
             dest,
             input: source,
@@ -206,7 +218,7 @@ if get_option('mandoc')
             command: [
                 asciidoc,
                 '-b', 'manpage',
-                '-a', doc_name_attribute,
+                '-a', man_base,
                 '-o', '@OUTPUT@',
                 '@INPUT@',
             ],

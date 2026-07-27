@@ -24,28 +24,23 @@ remains in `CHANGELOG.md`.
 | Layer | Role |
 |-------|------|
 | **This git tree** | Full fvwm3-derived sources so we can build and merge upstream |
-| **Stock `fvwm3` package** | Modules (`FvwmPager`, …), `share/fvwm3`, man pages, `FvwmCommand`, helpers |
-| **`bvwm` package (planned)** | Primarily the **`bvwm` binary** — what we materially changed in the core WM |
+| **Stock `fvwm3` package** | Unrelated install; can sit beside BVWM |
+| **`bvwm` package** | Self-contained: `bin/bvwm`, modules under `libexec/bvwm/`, `share/bvwm`, prefixed helpers/mans |
 
-We do **not** rename `Fvwm*` modules or man pages to `Bvwm*`. Configs keep
-`Module FvwmButtons` and friends. The product name is BVWM; the module vocabulary
-stays Fvwm.
+We do **not** rename `Module Fvwm*` command names. Configs keep
+`Module FvwmButtons` and friends; those binaries live under BVWM’s private
+moduledir. PATH tools and man pages use a `bvwm-` prefix so they coinstall with
+stock fvwm3 (`bvwm-root`, `bvwm-FvwmAnimate.1`, …).
 
-### Why a thin binary package?
+### Why a full, coinstallable package?
 
-Decor and core WM patches live in the main executable, not in every module. Depending
-on stock fvwm3 for the rest:
+Decor and core WM patches live in the main executable, but modules are
+versioned under `libexec/.../<ver>/`. Shipping BVWM’s own module/data tree
+avoids pinning a specific `fvwm3` package version. Prefixed helpers and mans
+avoid file conflicts so `fvwm3` and `bvwm` can both be installed.
 
-- lets `fvwm3` and `bvwm` both sit on disk (`bin/fvwm3` and `bin/bvwm`);
-- avoids duplicating (and fighting) hundreds of Fvwm man pages and share files;
-- keeps this fork easier to rebase when upstream moves.
-
-Pin the `fvwm3` runtime dependency to a compatible version: module paths are
-versioned (e.g. `libexec/fvwm3/1.1.5/`). Build BVWM so its compiled module/data
-paths match that package.
-
-If we later patch a module or share file, that artifact moves into the bvwm
-package (or the thin-binary model is revisited).
+`meson.project_name()` stays `fvwm3` for quieter rebases; install identity is
+the separate `bvwm_name` (`bvwm`).
 
 ## Divergences (engine)
 
@@ -75,9 +70,8 @@ locations, then packaged defaults. Keep a stock-safe `~/.fvwm2rc` (or none) for
 
 Same as upstream fvwm3 (meson). See `INSTALL.md`.
 
-For a FreeBSD port that only stages `bvwm`, build this tree, install/rename the
-main executable, and discard the rest of the stage so stock `fvwm3` owns modules
-and man pages.
+A normal `meson setup && meson install` stages the full BVWM tree under the
+`bvwm` install identity (binary, modules, share data, prefixed helpers/mans).
 
 ## Upstream
 

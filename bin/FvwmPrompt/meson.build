@@ -9,11 +9,11 @@ fvwmprompt_files += 'go.mod'
 fvwmprompt_files += 'go.sum'
 
 fvwmprompt_build = meson.current_source_dir()
-fvwmprompt_output = meson.current_build_dir() + '/FvwmPrompt'
+fvwmprompt_output = meson.current_build_dir() + '/bvwm-FvwmPrompt'
 
 fvwmprompt = custom_target(
-    'FvwmPrompt',
-    output: 'FvwmPrompt',
+    'bvwm-FvwmPrompt',
+    output: 'bvwm-FvwmPrompt',
     input: fvwmprompt_files,
     command: [
         golang,

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=BVWM
+Keywords=Bvwm Window Manager
+Comment=B? Virtual Window Manager
+Icon=@FVWM_DATADIR@/default-config/images/fvwm-logo-small.png
+Type=Application
+DesktopNames=BVWM;FVWM3;FVWM;
+Exec=@bindir@/bvwm

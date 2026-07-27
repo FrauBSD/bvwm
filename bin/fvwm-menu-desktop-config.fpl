@@ -1,4 +1,4 @@
-# Uage: Module FvwmPerl -l fvwm-menu-desktop-config.fpl
+# Uage: Module FvwmPerl -l bvwm-menu-desktop-config.fpl
 
 # This script generates an FvwmForm similar to the FvwmForm-Desktop by
 # Dan Espen but inserts the found xdg menus dynamically into the Form
@@ -16,8 +16,8 @@ my $configtmp = "$ENV{'FVWM_USERDIR'}/.XDGMenu-Config.fvwm2rc";
 
 open(MSG ,">$configtmp") || die "Error $!";
 
-my $all = `fvwm-menu-desktop --get-menus all`;
-my $selected = `fvwm-menu-desktop --get-menus desktop`;
+my $all = `bvwm-menu-desktop --get-menus all`;
+my $selected = `bvwm-menu-desktop --get-menus desktop`;
 
 my @all_filelist = split(/ /,$all);
 my @selected_filelist = split(/ /,$selected);
@@ -97,7 +97,7 @@ else {
 *${modname}: Line    center
 *${modname}: Text    \"\$[gt.No menus found! Check why from within a terminal with]\"
 *${modname}: Line    center
-*${modname}: Text    \"'fvwm-menu-desktop -v'\"
+*${modname}: Text    \"'bvwm-menu-desktop -v'\"
 *${modname}: Line    left
 *${modname}: Text    \" \"
 ";
@@ -189,7 +189,7 @@ foreach my $key (keys %all_menus) {
 }
 
 $fvwmform_commands .= "\"
-*${modname}: Command    PipeRead 'fvwm-menu-desktop \\
+*${modname}: Command    PipeRead 'bvwm-menu-desktop \\
 \$(IconsOn\?--enable-mini-icons )\\
 \$(Size\?-s \$(Size) )\\
 \$(TitlesOn\?--with-titles )\\
@@ -246,7 +246,7 @@ $fvwmform_commands .= "
   '*${modname}Default: AppIcon      \$(AppIcon) '       \\
 ) >> \$FVWM_USERDIR/.${modname}
 
-*${modname}: Command PipeRead 'fvwm-menu-desktop'
+*${modname}: Command PipeRead 'bvwm-menu-desktop'
 
 *${modname}: Button     continue \"\$[gt.Save]\"
 

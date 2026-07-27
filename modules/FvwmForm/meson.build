@@ -13,7 +13,7 @@ install_data = [
 
 install_data(
     install_data,
-    install_dir: join_paths(get_option('datadir'), meson.project_name()),
+    install_dir: join_paths(get_option('datadir'), bvwm_name),
 )
 
 fvwmform_sources = [

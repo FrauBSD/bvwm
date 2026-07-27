@@ -2,9 +2,10 @@ if golang.found()
     subdir('FvwmPrompt')
 endif
 
+# BVWM: prefix PATH helpers so bin/ coinstalls with stock fvwm3.
 FvwmCommand = configure_file(
     input: 'FvwmCommand.in',
-    output: 'FvwmCommand',
+    output: 'bvwm-FvwmCommand',
     configuration: file_config,
     install: true,
     install_dir: bindir,
@@ -13,7 +14,7 @@ FvwmCommand = configure_file(
 
 # We should tighten up the dependencies here, but for now we'll just use all_found_deps.
 fvwm_root = executable(
-    'fvwm-root',
+    'bvwm-root',
     'fvwm-root.c',
     include_directories: includedirs,
     link_with: libfvwm3,
@@ -23,7 +24,7 @@ fvwm_root = executable(
 
 fvwm_perllib = configure_file(
     input: 'fvwm-perllib.in',
-    output: 'fvwm-perllib',
+    output: 'bvwm-perllib',
     configuration: file_config,
     install: true,
     install_dir: bindir,
@@ -32,7 +33,7 @@ fvwm_perllib = configure_file(
 
 fvwm_convert = configure_file(
     input: 'fvwm-convert-2.6.in',
-    output: 'fvwm-convert-2.6',
+    output: 'bvwm-convert-2.6',
     configuration: file_config,
     install: true,
     install_dir: bindir,
@@ -41,7 +42,7 @@ fvwm_convert = configure_file(
 
 fvwm_menu_xlock = configure_file(
     input: 'fvwm-menu-xlock.in',
-    output: 'fvwm-menu-xlock',
+    output: 'bvwm-menu-xlock',
     configuration: file_config,
     install: true,
     install_dir: bindir,
@@ -50,7 +51,7 @@ fvwm_menu_xlock = configure_file(
 
 fvwm_menu_directory = configure_file(
     input: 'fvwm-menu-directory.in',
-    output: 'fvwm-menu-directory',
+    output: 'bvwm-menu-directory',
     configuration: file_config,
     install: true,
     install_dir: bindir,
@@ -59,7 +60,7 @@ fvwm_menu_directory = configure_file(
 
 fvwm_menu_desktop = configure_file(
     input: 'fvwm-menu-desktop.in',
-    output: 'fvwm-menu-desktop',
+    output: 'bvwm-menu-desktop',
     configuration: file_config,
     install: true,
     install_dir: bindir,

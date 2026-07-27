@@ -48,9 +48,12 @@ bindir = get_option('bindir')
 datadir = get_option('datadir')
 sysconfdir = get_option('sysconfdir')
 prefix = get_option('prefix')
-fvwm_datadir = join_paths(prefix, datadir, meson.project_name())
+# BVWM: coinstallable install identity. Keep meson.project_name() as fvwm3 for
+# rebase peace; paths, binary, and gettext use bvwm_name instead.
+bvwm_name = 'bvwm'
+fvwm_datadir = join_paths(prefix, datadir, bvwm_name)
 fvwm_moduledir = (
-    prefix / get_option('libexecdir') / meson.project_name() / meson.project_version()
+    prefix / get_option('libexecdir') / bvwm_name / meson.project_version()
 )
 fvwm_vcs_versioninfo = run_command(
     './utils/fvwm-version-str.sh',
@@ -73,7 +76,7 @@ endif
 # Set static configuration.
 conf.set_quoted('VERSION', meson.project_version())
 conf.set_quoted('VERSIONINFO', fvwm_vcs_versioninfo)
-conf.set_quoted('PACKAGE', meson.project_name())
+conf.set_quoted('PACKAGE', bvwm_name)
 # BVWM: keep stock fvwm3 on .fvwm2rc — our decor extras are not valid there.
 conf.set_quoted('FVWM2RC', '.bvwmrc')
 conf.set_quoted('FVWM_CONFIG', 'config')
@@ -459,8 +462,8 @@ subdir('fvwm')
 subdir('default-config')
 subdir('perllib')
 
-fvwm3 = executable(
-    meson.project_name(),
+bvwm = executable(
+    bvwm_name,
     fvwm_sources,
     include_directories: includedirs,
     dependencies: all_found_deps,
@@ -493,16 +496,16 @@ endforeach
 subdir('bin')
 
 # Contrib
-# Provide a freedesktop-compilant, minimal xsession.
+# Provide a freedesktop-compliant, minimal xsession.
 configure_file(
-    input: 'contrib/xsession/fvwm3.desktop.in',
-    output: 'fvwm3.desktop',
+    input: 'contrib/xsession/bvwm.desktop.in',
+    output: 'bvwm.desktop',
     configuration: file_config,
     install_dir: datadir / 'xsessions',
     install: true,
 )
 
-summary_docdir = get_option('datadir') / 'doc' / meson.project_name()
+summary_docdir = get_option('datadir') / 'doc' / bvwm_name
 if get_option('docdir') != ''
     summary_docdir = get_option('docdir')
 endif
@@ -515,7 +518,7 @@ summary(
         'docdir': summary_docdir,
         'libdir': get_option('libdir'),
         'libexecdir': get_option('libexecdir'),
-        'Module dir': get_option('libexecdir') / meson.project_name() / meson.project_version(),
+        'Module dir': get_option('libexecdir') / bvwm_name / meson.project_version(),
     },
     section: 'Directories',
 )
