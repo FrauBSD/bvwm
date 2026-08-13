@@ -39,16 +39,8 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
-#ifdef HAVE_UNSETENV
-#define FHaveUnsetenv 1
-#else
-#define unsetenv(x) do { } while (0)
-#define FHaveUnsetenv 0
-#endif
-
 /* ---------------------------- local macros ------------------------------- */
 
-#define ENV_LIST_INC 10
 #ifndef NULL
 #define NULL 0
 #endif
@@ -58,12 +50,6 @@
 /* ---------------------------- included code files ------------------------ */
 
 /* ---------------------------- local types -------------------------------- */
-
-typedef struct
-{
-	char *var;
-	char *env;
-} env_list_item;
 
 /* ---------------------------- forward declarations ----------------------- */
 
@@ -375,114 +361,34 @@ const char* getFirstEnv(const char *s, int *beg, int *end)
 	return env;
 }
 
-/* If env is NULL, var is removed from the environment list */
-static void add_to_envlist(char *var, char *env)
-{
-	static env_list_item *env_list = NULL;
-	static unsigned int env_len = 0;
-	static unsigned int env_len_allocated = 0;
-	unsigned int i;
-
-	/* find string in list */
-	if (env_list && env_len)
-	{
-		for (i = 0; i < env_len; i++)
-		{
-			if (strcmp(var, env_list[i].var) != 0)
-			{
-				continue;
-			}
-			/* found it - replace old string */
-			free(env_list[i].var);
-			free(env_list[i].env);
-			if (env == NULL)
-			{
-				/* delete */
-				env_len--;
-				env_list[i].var =
-					env_list[env_len].var;
-				env_list[i].env =
-					env_list[env_len].env;
-			}
-			else
-			{
-				/* replace */
-				env_list[i].var = var;
-				env_list[i].env = env;
-			}
-
-			return;
-		}
-	}
-	if (env == NULL)
-	{
-		return;
-	}
-	/* not found */
-	if (env_list == NULL)
-	{
-		/* list is still empty */
-		env_len_allocated = ENV_LIST_INC;
-		env_list = fxcalloc(sizeof(env_list_item), env_len_allocated);
-	}
-	else if (env_len >= env_len_allocated && env != NULL)
-	{
-		/* need more memory */
-		env_len_allocated = env_len + ENV_LIST_INC;
-		env_list = fxrealloc((void *)env_list, (env_len_allocated),
-				sizeof(env_list_item));
-	}
-	env_list[env_len].var = var;
-	env_list[env_len].env = env;
-	env_len++;
-
-	return;
-}
-
-/* This function keeps a list of all strings that were set in the environment.
- * If a variable is written again, the old memory is freed.  This function
+/* Set an environment variable, similar to setenv(3).  This function
  * should be called instead of putenv().
  *
- *   var - environement variable name
+ *   var - environment variable name
  *   env - environment string ("variable=value")
  *
- * Both arguments are copied internally and should be freed after calling this
- * function.
+ * setenv(3) copies its arguments into storage owned by libc, so both
+ * arguments may be freed after calling this function.  putenv(3) must
+ * not be used here: it hands ownership of the string to libc, and
+ * freeing it later (as the previous implementation did when a variable
+ * was replaced or unset) leaves environ referencing freed memory,
+ * corrupting the environment inherited by child processes and wedging
+ * all subsequent setenv/putenv calls.
  */
 void flib_putenv(char *var, char *env)
 {
-	char *s;
+	const char *value;
 
-	s = fxstrdup(var);
-	var = s;
-	s = fxstrdup(env);
-	env = s;
-	putenv(env);
-	add_to_envlist(var, env);
+	value = strchr(env, '=');
+	value = (value != NULL) ? value + 1 : "";
+	setenv(var, value, 1);
 
 	return;
 }
 
 void flib_unsetenv(const char *name)
 {
-	if (FHaveUnsetenv)
-	{
-		unsetenv(name);
-	}
-	else
-	{
-		int rc;
-
-		/* try putenv without '=' */
-		rc = putenv((char *)name);
-		if (rc == 0 || getenv(name) != NULL)
-		{
-			/* failed, write empty string */
-			flib_putenv((char *)name, "");
-			return;
-		}
-	}
-	add_to_envlist((char *)name, NULL);
+	unsetenv(name);
 
 	return;
 }
