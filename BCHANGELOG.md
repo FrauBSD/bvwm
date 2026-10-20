@@ -7,6 +7,19 @@ from (e.g. `1.1.5`) plus BVWM notes.
 
 ---
 
+## 1.1.5-bvwm.4
+
+### Fixed
+
+- **SetEnv / UnsetEnv** no longer corrupt `environ`. `flib_putenv()` passed
+  `putenv(3)` strings it later freed, and `UnsetEnv` never called
+  `unsetenv(3)` because the build left `HAVE_UNSETENV` undefined. A bad
+  environ entry then made later `setenv(3)` fail for the life of the
+  process, including across Restart. The code now uses `setenv(3)` and
+  `unsetenv(3)`, which copy their arguments.
+
+---
+
 ## 1.1.5-bvwm.3
 
 ### Packaging / coinstall
