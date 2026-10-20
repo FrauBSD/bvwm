@@ -1,0 +1,19 @@
+#!/bin/sh
+# Super key up: open the Start menu only for a plain Super tap.
+set -e
+
+DISPLAY="${DISPLAY:-:0}"
+export DISPLAY
+STATE_DIR="${STATE_DIR:-$HOME/.cache/super-menu-chord}"
+CHORD="$STATE_DIR/chord"
+DOWN="$STATE_DIR/down"
+
+rm -f "$STATE_DIR/pending.pid"
+
+if [ -f "$CHORD" ]; then
+	rm -f "$CHORD" "$DOWN"
+	exit 0
+fi
+
+rm -f "$DOWN"
+exec super-menu-open

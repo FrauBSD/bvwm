@@ -7,6 +7,38 @@ from (e.g. `1.1.5`) plus BVWM notes.
 
 ---
 
+## 1.1.5-bvwm.5
+
+### Added
+
+- **Tiling** in `default-config/tiling`, read by the stock config.
+  Super+arrows (halves, quarters, fill, restore), Super+Ctrl+Up/Down
+  (insert and walk back), Super+T (auto-tile for the current monitor,
+  desk, and pager page), Super+Tab, and Super+grave.
+  `default-config/tiling` binds these chords.
+- **Hotkey catalog** for those chords, installed into
+  `share/bhotkeys/plugins.d`, plus `bhotkeys-bvwm-run` and
+  `bhotkeys-bvwm-apply`. The x11-wm/bvwm port depends on x11/bhotkeys
+  and x11/bosd.
+- **`fvwm-tile`** and **`bvwm-same-class`**, PipeRead helpers for the
+  tiling functions.
+- **FvwmEventTile**, a second FvwmEvent alias: new windows join an
+  auto-tile layout, and closed windows leave it. The stock desk event
+  module is unchanged.
+- **`taskbar_h`** defaults to 0 in the stock config (bottom strut for
+  tiling). A later `InfoStoreAdd` replaces it.
+- **Session bus** when `DBUS_SESSION_BUS_ADDRESS` is empty. bvwm
+  re-execs through `dbus-launch --exit-with-session`, so the bus
+  is in the environment of bvwm and everything it starts, and the
+  bus exits with the session. An address already set is left alone.
+- **Start menu** on a bare Super press and release (`super-menu-arm`,
+  `super-menu-release`, `super-menu-open`), read from
+  `default-config/super-menu`. `bvwm-super-menu-handler` marks a
+  chord so release does not also open the menu. Enabled plugin
+  chords are registered by bhotkeys; this file does not bind them.
+
+---
+
 ## 1.1.5-bvwm.4
 
 ### Fixed

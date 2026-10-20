@@ -1,0 +1,17 @@
+#!/bin/sh
+# Mark a Super chord (Super+P, Super+E, Super+Space, ...) so the
+# delayed Start-menu open skips. Also cancel a sleeping SuperMenuArm
+# timer; Fn+F9 otherwise races that open and flashes the Start menu.
+set -e
+
+STATE_DIR="${STATE_DIR:-$HOME/.cache/super-menu-chord}"
+mkdir -p "$STATE_DIR"
+:> "$STATE_DIR/chord"
+
+[ -f "$STATE_DIR/pending.pid" ] || exit 0
+
+old=$( cat "$STATE_DIR/pending.pid" 2> /dev/null ) || old=
+if [ "$old" ]; then
+	kill "$old" 2> /dev/null || : kill ignored
+fi
+rm -f "$STATE_DIR/pending.pid"

@@ -1,0 +1,13 @@
+id bvwm-tile-rotate
+group x11-wm/bvwm
+label Tile rotate back
+chord Super+Ctrl+Down
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command Current TileRotateBack
+repeat 0
+greeter 0
+listen 0
+desc Rotate the tiling backward. bvwm owns the key.

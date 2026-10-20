@@ -1,0 +1,13 @@
+id bvwm-tile-bottom
+group x11-wm/bvwm
+label Tile bottom half
+chord Super+Shift+Down
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command Current TileApply 100 50 0 50
+repeat 0
+greeter 0
+listen 0
+desc Bottom half of the working area. bvwm owns the key.

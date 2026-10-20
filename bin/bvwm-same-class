@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# fvwm-same-class : PipeRead Next/Prev limited to one WM_CLASS.
+#
+# Stdout is one FVWM command.  Invoked from SuperGrave as:
+#   PipeRead `bvwm-same-class Next $[w.class]`
+#
+set -e
+pgm=${0##*/}
+cmd=$1
+class=$2
+
+usage()
+{
+	echo "Usage: $pgm Next|Prev class" >&2
+	echo "Options:" >&2
+	echo "	(none)" >&2
+}
+
+case $cmd in
+Next|Prev)
+	: ok
+	;;
+*)
+	usage
+	exit 1
+	;;
+esac
+[ "$class" ] || exit 0
+printf '%s\n' "$cmd (CurrentPage, CurrentScreen, AcceptsFocus, !Iconic, !CirculateSkip, !WindowListSkip, $class) SuperTabSelect"

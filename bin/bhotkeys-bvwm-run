@@ -1,0 +1,8 @@
+#!/bin/sh
+# One bvwm action at a time. Repeats while it runs are dropped,
+# so a held tile chord does not keep moving after the key is up.
+sock=${FVWMMFL_SOCKET:-/tmp/fvwmmfl/fvwm_mfl_:0.sock}
+[ -S "$sock" ] || exit 0
+[ $# -gt 0 ] || exit 0
+lock=/tmp/bhotkeys-bvwm-run.$(id -u).lock
+exec lockf -t 0 -k "$lock" FvwmCommand -f "$sock" "$*"

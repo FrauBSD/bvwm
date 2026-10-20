@@ -44,6 +44,10 @@ default_conf_files = [
     'FvwmScript-DateTime',
     'stalonetrayrc',
     'config',
+    'bhotkeys.config',
+    'super-menu',
+    'tiling',
+    'picom/default.conf',
 ]
 
 install_data(

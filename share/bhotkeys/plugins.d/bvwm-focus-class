@@ -1,0 +1,13 @@
+id bvwm-focus-class
+group x11-wm/bvwm
+label Next window of this class
+chord Super+grave
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command SuperGrave
+repeat 0
+greeter 0
+listen 0
+desc Cycle windows of the focused class. bvwm owns the key.

@@ -1,0 +1,20 @@
+#!/bin/sh
+# Super press: mark down only. The menu opens on release
+# (super-menu-release) unless a chord set the chord flag.
+set -e
+
+STATE_DIR="${STATE_DIR:-$HOME/.cache/super-menu-chord}"
+
+mkdir -p "$STATE_DIR"
+rm -f "$STATE_DIR/chord"
+
+# Cancel a legacy press-timer from an older super-menu-arm
+if [ -f "$STATE_DIR/pending.pid" ]; then
+	old=$( cat "$STATE_DIR/pending.pid" 2> /dev/null ) || old=
+	if [ "$old" ]; then
+		kill "$old" 2> /dev/null || : kill ignored
+	fi
+	rm -f "$STATE_DIR/pending.pid"
+fi
+
+: > "$STATE_DIR/down"

@@ -76,9 +76,22 @@ DesktopConfiguration global
 # actions that are run after a restart.
 DestroyFunc StartFunction
 AddToFunc   StartFunction
+# ARGB overlays need picom with the shipped config.
++ I Test (x picom) Exec exec sh -c 'pgrep -x picom >/dev/null 2>&1 || picom --config $[FVWM_DATADIR]/default-config/picom/default.conf -b'
 + I Test (Init) InitBackground
 + I Module FvwmButtons RightPanel
 + I Module FvwmEvent EventNewDesk
+
+# bhotkeys + bosd. Missing file is fine on an older install.
+Test (f $[FVWM_DATADIR]/default-config/bhotkeys.config) Read $[FVWM_DATADIR]/default-config/bhotkeys.config
+
+# Bare Super opens the Start menu on release. Missing file is fine.
+Test (f $[FVWM_DATADIR]/default-config/super-menu) Read $[FVWM_DATADIR]/default-config/super-menu
+
+# Tiling chords bhotkeys-bvwm advertises. taskbar_h is the bottom strut;
+# a later InfoStoreAdd replaces this 0.
+InfoStoreAdd taskbar_h 0
+Test (f $[FVWM_DATADIR]/default-config/tiling) Read $[FVWM_DATADIR]/default-config/tiling
 
 # Function to set background when fvwm starts
 DestroyFunc InitBackground

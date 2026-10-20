@@ -1,0 +1,17 @@
+# Bare Super opens the Start menu on key release.
+# bvwm-super-menu-handler marks a chord so that release does not
+# also open the menu. bhotkeys registers enabled plugin chords;
+# this file does not bind them.
+
+DestroyFunc SuperMenuArm
+AddToFunc   SuperMenuArm
++ I Exec exec super-menu-arm
+
+DestroyFunc SuperMenuRelease
+AddToFunc   SuperMenuRelease
++ I Exec exec super-menu-release
+
+Key Super_L	A A	SuperMenuArm
+Key Super_R	A A	SuperMenuArm
+Key Super_L	A R	SuperMenuRelease
+Key Super_R	A R	SuperMenuRelease

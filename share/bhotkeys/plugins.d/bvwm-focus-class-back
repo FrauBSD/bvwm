@@ -1,0 +1,13 @@
+id bvwm-focus-class-back
+group x11-wm/bvwm
+label Previous window of this class
+chord Super+Shift+grave
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command SuperGraveBack
+repeat 0
+greeter 0
+listen 0
+desc Cycle windows of the focused class backward. bvwm owns the key.

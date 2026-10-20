@@ -1,0 +1,39 @@
+#!/bin/sh
+# Ask fvwm to open the Start menu. SuperMenuShow waits for Super up,
+# then Alt+Esc warps the pointer onto XTerm. MenuFvwmRootMenu is the
+# fallback.
+set -e
+
+DISPLAY="${DISPLAY:-:0}"
+export DISPLAY
+STATE_DIR="${STATE_DIR:-$HOME/.cache/super-menu-chord}"
+CHORD="$STATE_DIR/chord"
+
+fvwm_cmd() {
+	_sock="${FVWMMFL_SOCKET:-/tmp/fvwmmfl/fvwm_mfl_${DISPLAY}.sock}"
+	_sock_alt=/tmp/fvwmmfl/fvwm_mfl_:0.sock
+	if [ -S "$_sock" ]; then
+		FvwmCommand -f "$_sock" "$@"
+	elif [ -S "$_sock_alt" ]; then
+		FvwmCommand -f "$_sock_alt" "$@"
+	else
+		return 1
+	fi
+}
+
+rm -f "$STATE_DIR/pending.pid"
+
+if [ -f "$CHORD" ]; then
+	rm -f "$CHORD"
+	exit 0
+fi
+
+if fvwm_cmd Silent SuperMenuShow 2> /dev/null; then
+	exit 0
+fi
+
+# MFL down: last resorts
+fvwm_cmd Silent MenuClose 2> /dev/null || : menu close failed
+command -v xsend-key > /dev/null && xsend-key alt+Escape && exit 0
+fvwm_cmd Silent MenuFvwmRootMenu 2> /dev/null || : root menu failed
+exit 0

@@ -71,3 +71,68 @@ config_data = install_data(
     'fvwm-menu-desktop-config.fpl',
     install_dir: fvwm_datadir,
 )
+
+fvwm_tile = install_data(
+    'fvwm-tile',
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+bvwm_same_class = install_data(
+    'bvwm-same-class',
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+bvwm_super_menu_handler = install_data(
+    'bvwm-super-menu-handler',
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+super_menu_arm = install_data(
+    'super-menu-arm',
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+super_menu_release = install_data(
+    'super-menu-release',
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+super_menu_open = install_data(
+    'super-menu-open',
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+bhotkeys_bvwm_run = install_data(
+    'bhotkeys-bvwm-run',
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+install_data(
+    [
+        '../share/bhotkeys/plugins.d/bvwm-focus-back',
+        '../share/bhotkeys/plugins.d/bvwm-focus-class',
+        '../share/bhotkeys/plugins.d/bvwm-focus-class-back',
+        '../share/bhotkeys/plugins.d/bvwm-focus-next',
+        '../share/bhotkeys/plugins.d/bvwm-tile-auto',
+        '../share/bhotkeys/plugins.d/bvwm-tile-bottom',
+        '../share/bhotkeys/plugins.d/bvwm-tile-bottom-left',
+        '../share/bhotkeys/plugins.d/bvwm-tile-bottom-right',
+        '../share/bhotkeys/plugins.d/bvwm-tile-down',
+        '../share/bhotkeys/plugins.d/bvwm-tile-insert',
+        '../share/bhotkeys/plugins.d/bvwm-tile-left',
+        '../share/bhotkeys/plugins.d/bvwm-tile-right',
+        '../share/bhotkeys/plugins.d/bvwm-tile-rotate',
+        '../share/bhotkeys/plugins.d/bvwm-tile-top',
+        '../share/bhotkeys/plugins.d/bvwm-tile-top-left',
+        '../share/bhotkeys/plugins.d/bvwm-tile-top-right',
+        '../share/bhotkeys/plugins.d/bvwm-tile-up',
+    ],
+    install_dir: join_paths(get_option('datadir'), 'bhotkeys', 'plugins.d'),
+)

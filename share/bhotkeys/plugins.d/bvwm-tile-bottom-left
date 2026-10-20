@@ -1,0 +1,13 @@
+id bvwm-tile-bottom-left
+group x11-wm/bvwm
+label Tile bottom-left quarter
+chord Super+Ctrl+Left
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command Current TileApply 50 50 0 50
+repeat 0
+greeter 0
+listen 0
+desc Bottom-left quarter. bvwm owns the key.

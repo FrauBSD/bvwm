@@ -1,0 +1,13 @@
+id bvwm-tile-up
+group x11-wm/bvwm
+label Tile up
+chord Super+Up
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command Current TileMaximize
+repeat 0
+greeter 0
+listen 0
+desc Super+Up. Fill the working area. bvwm owns the key.

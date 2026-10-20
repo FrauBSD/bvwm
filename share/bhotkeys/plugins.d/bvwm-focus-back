@@ -1,0 +1,13 @@
+id bvwm-focus-back
+group x11-wm/bvwm
+label Previous window
+chord Super+Shift+Tab
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command SuperTabBack
+repeat 0
+greeter 0
+listen 0
+desc Super+Shift+Tab. Cycle backward. bvwm owns the key.

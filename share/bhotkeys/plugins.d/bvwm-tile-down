@@ -1,0 +1,13 @@
+id bvwm-tile-down
+group x11-wm/bvwm
+label Tile drop
+chord Super+Down
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command Current TileRestore
+repeat 0
+greeter 0
+listen 0
+desc Drop the tiled window back to floating. bvwm owns the key.

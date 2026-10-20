@@ -1,0 +1,13 @@
+id bvwm-tile-auto
+group x11-wm/bvwm
+label Auto tile
+chord Super+t
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command TileAutoToggle
+repeat 0
+greeter 0
+listen 0
+desc Super+T. Pack windows. bvwm owns the key.

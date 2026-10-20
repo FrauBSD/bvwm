@@ -1,0 +1,13 @@
+id bvwm-tile-left
+group x11-wm/bvwm
+label Tile left
+chord Super+Left
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command Current TileApply 50 100 0 0
+repeat 0
+greeter 0
+listen 0
+desc Super+Left. Left half. bvwm owns the key.

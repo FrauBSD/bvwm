@@ -1,0 +1,245 @@
+# Super+arrow tiling, shipped with bvwm.
+# State 3 marks a tiled (percentage) maximize so Super+Up can still fill
+# the working area instead of toggling the tile off.
+# bhotkeys-bvwm advertises these chords. bvwm owns the keys.
+# Live reload: FvwmCommand 'Read $[FVWM_DATADIR]/default-config/tiling'
+#
+# Super+T is per monitor + desk + pager page (Ctrl+arrows / Ctrl+1-9).
+# One cell can be tiled while the next stays floating; a new map on a
+# floating cell must not Move the tiled cell's windows onto this page.
+#
+# Maximize percentages are of the window's monitor working area (taskbar
+# strut on the laptop panel only). Move without "screen" is percent of the
+# *global* desktop, so 0 0 / 50 0 yanked eDP-1 tiles onto DP-4. Always pass
+# screen $[w.screen]. Maximize flags (screen ...) must precede True or the
+# 50 100 sizes are dropped and it becomes 100 100 (same as Super+Up).
+# Super+Up is 100 100 (not grow) so FvwmPager is covered.
+# fvwm-tile places in working-area pixels (primary + $[taskbar_h]) so
+# Maximize's working-area percents and Move's screen percents do not
+# leave a gutter between tiles. Style all windows, UpdateStyles once,
+# then geometry; otherwise the first tile is sized with the title bar
+# still on and leaves a taskbar gap after NoTitle.
+# Move screen MON is the current page of that output. Page stride is
+# $[vp.width] x $[vp.height] (bounding box), not the output size, so a
+# narrower output's gap is not treated as the next pager cell. Pass
+# output origin + vp size; fvwm-tile uses v-prefix virtual coords.
+
+DestroyFunc TileApply
+AddToFunc   TileApply
++ I ThisWindow (Transient) Break
++ I ThisWindow (CirculateSkip) Break
++ I ThisWindow (!Maximizable) Break
++ I ThisWindow (WindowListSkip) Break
++ I ThisWindow ("florence") Break
++ I ThisWindow ("Florence") Break
++ I ThisWindow ("FvwmPager") Break
++ I ThisWindow ("FvwmButtons") Break
++ I ThisWindow ("Conky") Break
++ I ThisWindow ("Conky*") Break
++ I ThisWindow (Shaded) WindowShade False
++ I ThisWindow (Iconic) Iconify off
++ I PipeRead `fvwm-tile snap $[w.id] $[w.screen] $[w.desk] $[w.pagex] $[w.pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $0 $1 $2 $3 $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height]`
+
+DestroyFunc TileMaximize
+AddToFunc   TileMaximize
++ I ThisWindow (Transient) Break
++ I ThisWindow (CirculateSkip) Break
++ I ThisWindow (!Maximizable) Break
++ I ThisWindow (WindowListSkip) Break
++ I ThisWindow (Shaded) WindowShade False
++ I ThisWindow (Iconic) Iconify off
++ I ThisWindow (Maximized, !State 3) Maximize False
++ I TestRc (Match) Break
++ I State 3 False
++ I PipeRead `fvwm-tile snap $[w.id] $[w.screen] $[w.desk] $[w.pagex] $[w.pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] 100 100 0 0 $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height]`
+
+# Super+Ctrl+Up inserts into a per-cell layout (1 full, 2 split, 3
+# split the second pane, 4 quads, 5+ balanced grid). Super+T off: a
+# second press rotates (swap if occupied); Super+Ctrl+Down walks back;
+# Super+arrows snap only that window. Super+T on: dense tiling WM;
+# new maps join, close compacts, Super+Ctrl+Down ejects, Super+arrows
+# pin that window and reflow the rest. Harvest skips Florence, Conky,
+# FvwmPager, and the FvwmButtons taskbar. Super+Down ejects immediately.
+
+DestroyFunc TileInsert
+AddToFunc   TileInsert
++ I ThisWindow (Transient) Break
++ I ThisWindow (CirculateSkip) Break
++ I ThisWindow (!Maximizable) Break
++ I ThisWindow (State 1) Break
++ I ThisWindow (State 2) Break
++ I ThisWindow ("florence") Break
++ I ThisWindow ("Florence") Break
++ I ThisWindow ("florence-sticky") Break
++ I ThisWindow ("Florence-sticky") Break
++ I ThisWindow ("FvwmPager") Break
++ I ThisWindow ("FvwmButtons") Break
++ I ThisWindow ("Conky") Break
++ I ThisWindow ("Conky*") Break
++ I ThisWindow (WindowListSkip) Break
++ I ThisWindow (Shaded) WindowShade False
++ I ThisWindow (Iconic) Iconify off
++ I PipeRead `fvwm-tile insert $[w.id] $[w.screen] $[w.desk] $[w.pagex] $[w.pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height]`
+
+DestroyFunc TileRotateBack
+AddToFunc   TileRotateBack
++ I ThisWindow (Transient) Break
++ I ThisWindow (CirculateSkip) Break
++ I ThisWindow (!Maximizable) Break
++ I ThisWindow (State 1) Break
++ I ThisWindow (State 2) Break
++ I ThisWindow ("florence") Break
++ I ThisWindow ("Florence") Break
++ I ThisWindow ("florence-sticky") Break
++ I ThisWindow ("Florence-sticky") Break
++ I ThisWindow ("FvwmPager") Break
++ I ThisWindow ("FvwmButtons") Break
++ I ThisWindow ("Conky") Break
++ I ThisWindow ("Conky*") Break
++ I ThisWindow (WindowListSkip) Break
++ I PipeRead `fvwm-tile back $[w.id] $[w.screen] $[w.desk] $[w.pagex] $[w.pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height]`
+
+DestroyFunc TileHarvestOne
+AddToFunc   TileHarvestOne
++ I ThisWindow (Transient) Break
++ I ThisWindow (CirculateSkip) Break
++ I ThisWindow (!Maximizable) Break
++ I ThisWindow (State 1) Break
++ I ThisWindow (State 2) Break
++ I ThisWindow ("florence") Break
++ I ThisWindow ("Florence") Break
++ I ThisWindow ("florence-sticky") Break
++ I ThisWindow ("Florence-sticky") Break
++ I ThisWindow ("FvwmPager") Break
++ I ThisWindow ("FvwmButtons") Break
++ I ThisWindow ("Conky") Break
++ I ThisWindow ("Conky*") Break
++ I ThisWindow (WindowListSkip) Break
++ I ThisWindow (Iconic) Break
++ I PipeRead `fvwm-tile harvest-add $[w.id] $[w.screen] $[w.desk] $[w.pagex] $[w.pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height]`
+
+DestroyFunc TileHarvest
+AddToFunc   TileHarvest
++ I PipeRead `fvwm-tile harvest-begin $[monitor.current] $[monitor.$[monitor.current].desk] $[monitor.$[monitor.current].pagex] $[monitor.$[monitor.current].pagey] $[monitor.$[monitor.current].x] $[monitor.$[monitor.current].y] $[vp.width] $[vp.height]`
++ I All (CurrentPage, CurrentScreen, Maximizable, !Transient, \
+	!CirculateSkip, !Iconic, !WindowListSkip, !State 1, !State 2, \
+	!"florence", !"Florence", !"florence-sticky", !"Florence-sticky", \
+	!"FvwmPager", !"FvwmButtons", !"Conky", !"Conky*") TileHarvestOne
++ I PipeRead `fvwm-tile harvest-apply $[monitor.current] $[monitor.$[monitor.current].desk] $[monitor.$[monitor.current].pagex] $[monitor.$[monitor.current].pagey]`
+
+DestroyFunc TileAutoToggle
+AddToFunc   TileAutoToggle
++ I PipeRead `fvwm-tile auto-toggle $[monitor.current] $[monitor.$[monitor.current].desk] $[monitor.$[monitor.current].pagex] $[monitor.$[monitor.current].pagey] $[monitor.$[monitor.current].width] $[monitor.$[monitor.current].height] $[monitor.primary] $[taskbar_h] $[monitor.$[monitor.current].x] $[monitor.$[monitor.current].y] $[vp.width] $[vp.height]`
+
+DestroyFunc TileAutoMapped
+AddToFunc   TileAutoMapped
++ I Test (!EnvIsSet FVWM_TILE_AUTO) Break
++ I PipeRead `echo Schedule 200 WindowId $[w.id] TileAutoMappedDo`
++ I PipeRead `echo Schedule 800 WindowId $[w.id] TileAutoMappedDo`
+
+DestroyFunc TileAutoMappedDo
+AddToFunc   TileAutoMappedDo
++ I ThisWindow (Transient) Break
++ I ThisWindow (!Maximizable) Break
++ I ThisWindow (State 1) Break
++ I ThisWindow (State 2) Break
++ I ThisWindow (Iconic) Break
++ I ThisWindow ("florence") Break
++ I ThisWindow ("Florence") Break
++ I ThisWindow ("florence-sticky") Break
++ I ThisWindow ("Florence-sticky") Break
++ I ThisWindow ("FvwmPager") Break
++ I ThisWindow ("FvwmButtons") Break
++ I ThisWindow ("Conky") Break
++ I ThisWindow ("Conky*") Break
++ I PipeRead `fvwm-tile mapped $[w.id] $[w.screen] $[w.desk] $[w.pagex] $[w.pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[pointer.screen] $[monitor.$[pointer.screen].desk] $[monitor.$[pointer.screen].pagex] $[monitor.$[pointer.screen].pagey] $[monitor.$[pointer.screen].width] $[monitor.$[pointer.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height] $[monitor.$[pointer.screen].x] $[monitor.$[pointer.screen].y]`
+
+DestroyFunc TileDestroyed
+AddToFunc   TileDestroyed
++ I PipeRead `fvwm-tile drop $[w.id]`
+
+DestroyFunc TileRestore
+AddToFunc   TileRestore
++ I PipeRead `fvwm-tile remove $[w.id]`
++ I ThisWindow (Maximized) Maximize False
++ I State 3 False
++ I DestroyWindowStyle
++ I Raise
++ I Focus
+
+# Super+Tab: immediate focus cycle on this monitor + pager page (tile or
+# float).  Not the Alt+Tab WindowList.  Super+Shift+Tab walks backward.
+# Skip pager/taskbar/Florence/Conky via CirculateSkip + WindowListSkip.
+DestroyFunc SuperTabSelect
+AddToFunc   SuperTabSelect
++ I WindowShade False
++ I Iconify off
++ I Raise
++ I Focus NoWarp
+
+DestroyFunc SuperTab
+AddToFunc   SuperTab
++ I Next (CurrentPage, CurrentScreen, AcceptsFocus, !Iconic, \
+	!CirculateSkip, !WindowListSkip) SuperTabSelect
+
+DestroyFunc SuperTabBack
+AddToFunc   SuperTabBack
++ I Prev (CurrentPage, CurrentScreen, AcceptsFocus, !Iconic, \
+	!CirculateSkip, !WindowListSkip) SuperTabSelect
+
+# Super+`: same cycle, but only WM_CLASS of the focused window.
+# Bind like SuperTab (no Current on the Key line; Current there skips
+# CirculateSkip focus and the chord never runs).  Current wraps PipeRead
+# so $[w.class] expands from the focused window.
+DestroyFunc SuperGrave
+AddToFunc   SuperGrave
++ I Current PipeRead `bvwm-same-class Next $[w.class]`
+
+DestroyFunc SuperGraveBack
+AddToFunc   SuperGraveBack
++ I Current PipeRead `bvwm-same-class Prev $[w.class]`
+
+# Super+Left/Right: halves. Super+Up: fill working area (covers pager).
+# Super+Down: restore floating (also drops the window from Super+T layout).
+# Super+Shift+Up/Down: top/bottom halves. Super+Shift+Left/Right: top quarters.
+# Super+Ctrl+Left/Right: bottom quarters.
+# Super+Ctrl+Up: insert into layout, or rotate/swap the focused window.
+# Super+Ctrl+Down: previous cell (floating), or eject (auto-tile).
+# Super+Tab / Super+Shift+Tab: cycle focus (no WindowList).
+# Super+` / Super+Shift+`: same, limited to the focused window's class.
+Key Left	A 4	Current TileApply 50 100 0 0
+Key Right	A 4	Current TileApply 50 100 50 0
+Key Up		A 4	Current TileMaximize
+Key Down	A 4	Current TileRestore
+Key Up		A 4S	Current TileApply 100 50 0 0
+Key Down	A 4S	Current TileApply 100 50 0 50
+Key Left	A 4S	Current TileApply 50 50 0 0
+Key Right	A 4S	Current TileApply 50 50 50 0
+Key Left	A 4C	Current TileApply 50 50 0 50
+Key Right	A 4C	Current TileApply 50 50 50 50
+Key Up		A 4C	Current TileInsert
+Key Down	A 4C	Current TileRotateBack
+Key t		A 4	TileAutoToggle
+Key T		A 4	TileAutoToggle
+Key Tab		A 4	SuperTab
+Key Tab		A 4S	SuperTabBack
+Key ISO_Left_Tab	A 4	SuperTabBack
+Key ISO_Left_Tab	A 4S	SuperTabBack
+Key grave		A 4	SuperGrave
+Key grave		A 4S	SuperGraveBack
+Key quoteleft		A 4	SuperGrave
+Key quoteleft		A 4S	SuperGraveBack
+Key dead_grave		A 4	SuperGrave
+Key dead_grave		A 4S	SuperGraveBack
+Key asciitilde		A 4	SuperGraveBack
+Key asciitilde		A 4S	SuperGraveBack
+Key dead_tilde		A 4	SuperGraveBack
+Key dead_tilde		A 4S	SuperGraveBack
+
+# New windows join the auto-tile layout. Closed windows leave it.
+# A second FvwmEvent alias, so the stock desk event module stays.
+DestroyModuleConfig FvwmEventTile: *
+*FvwmEventTile: add_window TileAutoMapped
+*FvwmEventTile: destroy_window TileDestroyed
+KillModule FvwmEventTile
+Module FvwmEvent FvwmEventTile

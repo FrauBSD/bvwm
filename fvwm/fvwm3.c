@@ -18,6 +18,8 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <signal.h>
 #include <errno.h>
 #include <sys/stat.h>
@@ -1661,6 +1663,42 @@ static void reopen_fd(int fd, char* mode, FILE *of)
 	return;
 }
 
+/*
+ * BVWM: the other session scripts start a session bus when
+ * DBUS_SESSION_BUS_ADDRESS is empty. This program is the session,
+ * so do that here. dbus-launch puts the address in the environment
+ * and re-execs us. The bus exits with the session. An address
+ * already set is left alone.
+ */
+static void
+bvwm_session_bus(int argc, char **argv)
+{
+	const char *addr;
+	char **nargv;
+	int i;
+
+	addr = getenv("DBUS_SESSION_BUS_ADDRESS");
+	if (addr != NULL && addr[0] != '\0')
+	{
+		return;
+	}
+	nargv = malloc((size_t)(argc + 3) * sizeof(*nargv));
+	if (nargv == NULL)
+	{
+		return;
+	}
+	nargv[0] = "dbus-launch";
+	nargv[1] = "--exit-with-session";
+	for (i = 0; i < argc; i++)
+	{
+		nargv[i + 2] = argv[i];
+	}
+	nargv[argc + 2] = NULL;
+	execvp(nargv[0], nargv);
+	perror("bvwm: dbus-launch");
+	free(nargv);
+}
+
 /***********************************************************************
  *
  *  Procedure:
@@ -1681,6 +1719,8 @@ int main(int argc, char **argv)
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
 	struct monitor	*m = NULL;
+
+	bvwm_session_bus(argc, argv);
 
 	functions_init();
 	fvwmlib_init_max_fd();
