@@ -7,6 +7,17 @@ from (e.g. `1.1.5`) plus BVWM notes.
 
 ---
 
+## 1.1.5-bvwm.6
+
+### Packaging
+
+- **FvwmPrompt** honors `GO_CMD` and `GO_BUILDFLAGS` when a packager sets
+  them. Meson writes a wrapper so quoted `-ldflags` are shell syntax and
+  `-C` stays the first `go build` flag. Unset, the build is unchanged
+  (`go build -mod=vendor`).
+
+---
+
 ## 1.1.5-bvwm.5
 
 ### Added
