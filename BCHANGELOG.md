@@ -7,6 +7,24 @@ from (e.g. `1.1.5`) plus BVWM notes.
 
 ---
 
+## 1.1.5-bvwm.7
+
+### Fixed
+
+- **New tiles meet the strut.** `ResizeHintOverride` replaced the font
+  increment only when size hints were read. The first
+  `ResizeMoveMaximize` still snapped to that increment, so the frame
+  stopped short of the taskbar. `constrain_size()` now applies the
+  style before the snap.
+- **Super chords** call `SuperChord` before they return, so releasing
+  Super after Super+T does not also open the start menu.
+- **Auto-tile on map** calls `TileAutoMappedDo` directly. `Schedule`
+  stamps its deadline from the last key or button, so the 200ms and
+  800ms delays both ran at map time.
+- **Super+T** reports through `bosd` (`tile-on` and `tile-float`).
+
+---
+
 ## 1.1.5-bvwm.6
 
 ### Packaging

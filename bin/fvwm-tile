@@ -1168,14 +1168,14 @@ cmd_auto_toggle()
 		else
 			echo UnsetEnv FVWM_TILE_AUTO
 		fi
-		if command -v tiling-osd >/dev/null 2>&1; then
-			echo "Exec exec tiling-osd float"
+		if command -v bosd >/dev/null 2>&1; then
+			echo "Exec exec bosd tile-float 2"
 		fi
 	else
 		: > "$( slot_dir "$_slot" )/auto"
 		echo SetEnv FVWM_TILE_AUTO 1
-		if command -v tiling-osd >/dev/null 2>&1; then
-			echo "Exec exec tiling-osd tile"
+		if command -v bosd >/dev/null 2>&1; then
+			echo "Exec exec bosd tile-on 2"
 		fi
 		echo TileHarvest
 	fi

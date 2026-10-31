@@ -4,6 +4,13 @@
 # bhotkeys-bvwm advertises these chords. bvwm owns the keys.
 # Live reload: FvwmCommand 'Read $[FVWM_DATADIR]/default-config/tiling'
 #
+# Key functions mark the Super chord before they return (PipeRead, so
+# the flag exists before Super release). The listener does not see
+# these keys: the plugins are listen 0.
+# FvwmEventTile is a second FvwmEvent. KillModule FvwmEvent with no
+# alias kills every FvwmEvent, including this one. Kill the desk
+# module by its own alias.
+#
 # Super+T is per monitor + desk + pager page (Ctrl+arrows / Ctrl+1-9).
 # One cell can be tiled while the next stays floating; a new map on a
 # floating cell must not Move the tiled cell's windows onto this page.
@@ -24,8 +31,13 @@
 # narrower output's gap is not treated as the next pager cell. Pass
 # output origin + vp size; fvwm-tile uses v-prefix virtual coords.
 
+DestroyFunc SuperChord
+AddToFunc   SuperChord
++ I PipeRead `bvwm-super-menu-handler chord; echo Nop`
+
 DestroyFunc TileApply
 AddToFunc   TileApply
++ I SuperChord
 + I ThisWindow (Transient) Break
 + I ThisWindow (CirculateSkip) Break
 + I ThisWindow (!Maximizable) Break
@@ -42,6 +54,7 @@ AddToFunc   TileApply
 
 DestroyFunc TileMaximize
 AddToFunc   TileMaximize
++ I SuperChord
 + I ThisWindow (Transient) Break
 + I ThisWindow (CirculateSkip) Break
 + I ThisWindow (!Maximizable) Break
@@ -63,6 +76,7 @@ AddToFunc   TileMaximize
 
 DestroyFunc TileInsert
 AddToFunc   TileInsert
++ I SuperChord
 + I ThisWindow (Transient) Break
 + I ThisWindow (CirculateSkip) Break
 + I ThisWindow (!Maximizable) Break
@@ -83,6 +97,7 @@ AddToFunc   TileInsert
 
 DestroyFunc TileRotateBack
 AddToFunc   TileRotateBack
++ I SuperChord
 + I ThisWindow (Transient) Break
 + I ThisWindow (CirculateSkip) Break
 + I ThisWindow (!Maximizable) Break
@@ -129,13 +144,13 @@ AddToFunc   TileHarvest
 
 DestroyFunc TileAutoToggle
 AddToFunc   TileAutoToggle
++ I SuperChord
 + I PipeRead `fvwm-tile auto-toggle $[monitor.current] $[monitor.$[monitor.current].desk] $[monitor.$[monitor.current].pagex] $[monitor.$[monitor.current].pagey] $[monitor.$[monitor.current].width] $[monitor.$[monitor.current].height] $[monitor.primary] $[taskbar_h] $[monitor.$[monitor.current].x] $[monitor.$[monitor.current].y] $[vp.width] $[vp.height]`
 
 DestroyFunc TileAutoMapped
 AddToFunc   TileAutoMapped
 + I Test (!EnvIsSet FVWM_TILE_AUTO) Break
-+ I PipeRead `echo Schedule 200 WindowId $[w.id] TileAutoMappedDo`
-+ I PipeRead `echo Schedule 800 WindowId $[w.id] TileAutoMappedDo`
++ I TileAutoMappedDo
 
 DestroyFunc TileAutoMappedDo
 AddToFunc   TileAutoMappedDo
@@ -160,6 +175,7 @@ AddToFunc   TileDestroyed
 
 DestroyFunc TileRestore
 AddToFunc   TileRestore
++ I SuperChord
 + I PipeRead `fvwm-tile remove $[w.id]`
 + I ThisWindow (Maximized) Maximize False
 + I State 3 False
@@ -179,11 +195,13 @@ AddToFunc   SuperTabSelect
 
 DestroyFunc SuperTab
 AddToFunc   SuperTab
++ I SuperChord
 + I Next (CurrentPage, CurrentScreen, AcceptsFocus, !Iconic, \
 	!CirculateSkip, !WindowListSkip) SuperTabSelect
 
 DestroyFunc SuperTabBack
 AddToFunc   SuperTabBack
++ I SuperChord
 + I Prev (CurrentPage, CurrentScreen, AcceptsFocus, !Iconic, \
 	!CirculateSkip, !WindowListSkip) SuperTabSelect
 
@@ -193,10 +211,12 @@ AddToFunc   SuperTabBack
 # so $[w.class] expands from the focused window.
 DestroyFunc SuperGrave
 AddToFunc   SuperGrave
++ I SuperChord
 + I Current PipeRead `bvwm-same-class Next $[w.class]`
 
 DestroyFunc SuperGraveBack
 AddToFunc   SuperGraveBack
++ I SuperChord
 + I Current PipeRead `bvwm-same-class Prev $[w.class]`
 
 # Super+Left/Right: halves. Super+Up: fill working area (covers pager).

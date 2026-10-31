@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/defaults.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
 #include "fvwm.h"
@@ -910,6 +911,21 @@ void constrain_size(
 
 	inc.width = fw->hints.width_inc;
 	inc.height = fw->hints.height_inc;
+
+	/*
+	 * ResizeHintOverride takes effect when hints are read.  The
+	 * first resize often runs before that, and the font increment
+	 * then leaves the edge short of the requested pixels.
+	 */
+	if (HAS_OVERRIDE_SIZE_HINTS(fw))
+	{
+		inc.width = 1;
+		inc.height = 1;
+		min.width = 1;
+		min.height = 1;
+		max.width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+		max.height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+	}
 
 	/*
 	 * First, clamp to min and max values
