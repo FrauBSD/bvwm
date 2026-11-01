@@ -17,6 +17,19 @@ from (e.g. `1.1.5`) plus BVWM notes.
   Super release does not open the start menu. CirculateSkip windows
   (pager, taskbar) are left alone.
 
+### Fixed
+
+- **Start menu on the first Super tap.** A bare `R` binding was
+  modifier none and ran on the press, before a chord could mark
+  itself. The next bare Super found that mark and did not open.
+  `R` is a release binding. Super release is `4R` because Mod4 is
+  still set. `SuperMenuArm` is `PipeRead`, so the chord file is
+  clear before the next event.
+- **Fullscreen stays fullscreen.** A resize or maximize smaller
+  than the monitor was applied to an EWMH fullscreen window, and
+  the client left fullscreen. Those sizes are ignored.
+  `Maximize False` still exits.
+
 ---
 
 ## 1.1.5-bvwm.7

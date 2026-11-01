@@ -3,15 +3,20 @@
 # also open the menu. bhotkeys registers enabled plugin chords;
 # this file does not bind them.
 
+# PipeRead so the chord file is gone before the next key event.
+# Exec would race the release script on a short tap.
 DestroyFunc SuperMenuArm
 AddToFunc   SuperMenuArm
-+ I Exec exec super-menu-arm
++ I PipeRead `super-menu-arm; echo Nop`
 
 DestroyFunc SuperMenuRelease
 AddToFunc   SuperMenuRelease
 + I Exec exec super-menu-release
 
+# 4R runs on Super release. The release event still has Mod4 set.
+# A bare R is modifier none, and that used to run on the press,
+# before the chord key had marked itself.
 Key Super_L	A A	SuperMenuArm
 Key Super_R	A A	SuperMenuArm
-Key Super_L	A R	SuperMenuRelease
-Key Super_R	A R	SuperMenuRelease
+Key Super_L	A 4R	SuperMenuRelease
+Key Super_R	A 4R	SuperMenuRelease

@@ -2728,6 +2728,34 @@ void _handle_key(const evh_args_t *ea, Bool is_press)
 	/* Searching the binding list with a different 'type' value
 	 * (ie. BIND_KEYPRESS vs BIND_PKEYPRESS) doesn't make a difference.
 	 * The different context value does though. */
+	if (!is_press)
+	{
+		action = CheckTwoBindings(
+			&is_second_binding, Scr.AllBindings, kc,
+			te->xkey.state, GetUnusedModifiers(), kcontext,
+			BIND_KEYRELEASE, winClass1, name1,
+			ea->exc->w.wcontext, BIND_KEYRELEASE,
+			winClass2, name2);
+		if (action != NULL)
+		{
+			exc = ea->exc;
+			if (is_second_binding == False)
+			{
+				ecc.w.fw = sf;
+				ecc.w.wcontext = kcontext;
+				exc = exc_clone_context(
+					ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
+			}
+			execute_function(NULL, exc, action, NULL, 0);
+			if (is_second_binding == False)
+			{
+				exc_destroy_context(exc);
+			}
+			XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
+			return;
+		}
+	}
+
 	action = CheckTwoBindings(
 		&is_second_binding, Scr.AllBindings, kc,
 		te->xkey.state, GetUnusedModifiers(), kcontext, BIND_KEYPRESS,

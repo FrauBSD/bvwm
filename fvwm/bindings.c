@@ -365,6 +365,38 @@ static int ParseBinding(
 		return 0;
 	}
 
+	/*
+	 * R in the modifier list is not a key modifier. It marks a
+	 * binding that runs on key release. Super release still has
+	 * Mod4 in the event state, so the binding is written 4R.
+	 */
+	if (BIND_IS_KEY_BINDING(type))
+	{
+		char *s;
+		char *d;
+		Bool is_release = False;
+
+		for (s = modifier_string, d = modifier_string; *s != '\0'; s++)
+		{
+			if (*s == 'r' || *s == 'R')
+			{
+				is_release = True;
+				continue;
+			}
+			*d++ = *s;
+		}
+		*d = '\0';
+		if (is_release)
+		{
+			if (modifier_string[0] == '\0')
+			{
+				modifier_string[0] = 'N';
+				modifier_string[1] = '\0';
+			}
+			type = BIND_KEYRELEASE;
+		}
+	}
+
 	if (wcontext_string_to_wcontext(
 		    context_string, &context) && !is_silent)
 	{
@@ -556,6 +588,10 @@ void print_bindings(void)
 		{
 		case BIND_KEYPRESS:
 			type = "Key";
+			snprintf(kname, sizeof kname, "%s\t", b->key_name);
+			break;
+		case BIND_KEYRELEASE:
+			type = "KeyRelease";
 			snprintf(kname, sizeof kname, "%s\t", b->key_name);
 			break;
 		case BIND_PKEYPRESS:

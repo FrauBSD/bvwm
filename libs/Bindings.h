@@ -12,7 +12,9 @@
 /* ---------------------------- global macros ------------------------------ */
 
 #define BIND_IS_KEY_PRESS(t) ((t) == BIND_KEYPRESS || (t) == BIND_PKEYPRESS)
-#define BIND_IS_KEY_BINDING(t) ((t) == BIND_KEYPRESS || (t) == BIND_PKEYPRESS)
+#define BIND_IS_KEY_BINDING(t) \
+	((t) == BIND_KEYPRESS || (t) == BIND_PKEYPRESS || \
+	 (t) == BIND_KEYRELEASE)
 #define BIND_IS_PKEY_BINDING(t) ((t) == BIND_PKEYPRESS)
 #define BIND_IS_MOUSE_BINDING(t) \
 	((t) == BIND_BUTTONPRESS || (t) == BIND_BUTTONRELEASE)
@@ -25,6 +27,7 @@ typedef enum
 	BIND_BUTTONPRESS = 0,
 	BIND_BUTTONRELEASE = 1,
 	BIND_KEYPRESS = 2,
+	BIND_KEYRELEASE = 3,
 	BIND_PKEYPRESS = 4,
 } binding_t;
 

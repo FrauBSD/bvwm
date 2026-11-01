@@ -1504,6 +1504,24 @@ static Bool resize_move_window(F_CMD_ARGS)
 		return False;
 	}
 
+	if (IS_EWMH_FULLSCREEN(fw))
+	{
+		struct monitor *mon;
+
+		mon = (fw->m != NULL) ? fw->m : monitor_get_current();
+		/*
+		 * Entering fullscreen asks for the whole monitor. A
+		 * later tile or work-area resize must not shrink the
+		 * frame; the client leaves fullscreen when it does.
+		 */
+		if (mon != NULL && mon->si != NULL &&
+		    (final_size.width < mon->si->w ||
+		     final_size.height < mon->si->h))
+		{
+			return False;
+		}
+	}
+
 	if (IS_MAXIMIZED(fw))
 	{
 		/* must redraw the buttons now so that the 'maximize' button
@@ -5267,6 +5285,16 @@ void CMD_Maximize(F_CMD_ARGS)
 		}
 		return;
 	} else {
+		if (IS_EWMH_FULLSCREEN(fw))
+		{
+			/* Maximize False leaves fullscreen. A plain
+			 * maximize must not shrink it to the work area. */
+			if (toggle == 0)
+			{
+				unmaximize_fvwm_window(fw, pc);
+			}
+			return;
+		}
 		if (toggle == 0 && !IS_MAXIMIZED(fw))
 		{
 			return;
