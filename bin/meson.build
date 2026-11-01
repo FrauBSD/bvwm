@@ -124,6 +124,7 @@ install_data(
         '../share/bhotkeys/plugins.d/bvwm-tile-bottom',
         '../share/bhotkeys/plugins.d/bvwm-tile-bottom-left',
         '../share/bhotkeys/plugins.d/bvwm-tile-bottom-right',
+        '../share/bhotkeys/plugins.d/bvwm-tile-close',
         '../share/bhotkeys/plugins.d/bvwm-tile-down',
         '../share/bhotkeys/plugins.d/bvwm-tile-insert',
         '../share/bhotkeys/plugins.d/bvwm-tile-left',

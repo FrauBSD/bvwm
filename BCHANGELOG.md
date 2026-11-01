@@ -7,6 +7,18 @@ from (e.g. `1.1.5`) plus BVWM notes.
 
 ---
 
+## 1.1.5-bvwm.8
+
+### Added
+
+- **Super+W** in `default-config/tiling` closes the focused window,
+  the same action as Alt+F4. A tile has no title-bar close button,
+  and F4 is behind Fn when Fn-lock is on. The chord is marked so
+  Super release does not open the start menu. CirculateSkip windows
+  (pager, taskbar) are left alone.
+
+---
+
 ## 1.1.5-bvwm.7
 
 ### Fixed

@@ -219,6 +219,16 @@ AddToFunc   SuperGraveBack
 + I SuperChord
 + I Current PipeRead `bvwm-same-class Prev $[w.class]`
 
+# Close is the Alt+F4 action. A bare Close here asks for a click:
+# the key has no window. Current names the focus.
+# CirculateSkip keeps the pager and the taskbar. SuperChord runs
+# first so release does not open the menu.
+DestroyFunc TileClose
+AddToFunc   TileClose
++ I SuperChord
++ I Current (CirculateSkip) Break
++ I Current Close
+
 # Super+Left/Right: halves. Super+Up: fill working area (covers pager).
 # Super+Down: restore floating (also drops the window from Super+T layout).
 # Super+Shift+Up/Down: top/bottom halves. Super+Shift+Left/Right: top quarters.
@@ -227,6 +237,8 @@ AddToFunc   SuperGraveBack
 # Super+Ctrl+Down: previous cell (floating), or eject (auto-tile).
 # Super+Tab / Super+Shift+Tab: cycle focus (no WindowList).
 # Super+` / Super+Shift+`: same, limited to the focused window's class.
+# Super+W: close the focused window (Alt+F4). A tile has no close
+# button, and F4 is behind Fn when Fn-lock is on.
 Key Left	A 4	Current TileApply 50 100 0 0
 Key Right	A 4	Current TileApply 50 100 50 0
 Key Up		A 4	Current TileMaximize
@@ -241,6 +253,8 @@ Key Up		A 4C	Current TileInsert
 Key Down	A 4C	Current TileRotateBack
 Key t		A 4	TileAutoToggle
 Key T		A 4	TileAutoToggle
+Key w		A 4	TileClose
+Key W		A 4	TileClose
 Key Tab		A 4	SuperTab
 Key Tab		A 4S	SuperTabBack
 Key ISO_Left_Tab	A 4	SuperTabBack

@@ -1,0 +1,13 @@
+id bvwm-tile-close
+group x11-wm/bvwm
+label Close window
+chord Super+w
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command TileClose
+repeat 0
+greeter 0
+listen 0
+desc Super+W. Close the focused window. bvwm owns the key.
