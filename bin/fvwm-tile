@@ -639,6 +639,39 @@ emit_restore()
 	echo UpdateStyles
 }
 
+#
+# PipeRead bosd line. An empty name is a map joining the layout,
+# not a user chord, and prints nothing.
+#
+emit_bosd()
+{
+	local _name
+
+	_name="$1"
+	[ "$_name" ] || return 0
+	command -v bosd >/dev/null 2>&1 || return 0
+	echo "Exec exec bosd $_name 2"
+}
+
+#
+# Super-arrow percents (hp vp xp yp). 100 100 is the working-area
+# fill (Super+Up), not the top half.
+#
+osd_snap()
+{
+	case "$1 $2 $3 $4" in
+	"50 100 0 0")	echo tile-left ;;
+	"50 100 50 0")	echo tile-right ;;
+	"100 100 0 0")	echo tile-up ;;
+	"100 50 0 0")	echo tile-top ;;
+	"100 50 0 50")	echo tile-bottom ;;
+	"50 50 0 0")	echo tile-top-left ;;
+	"50 50 50 0")	echo tile-top-right ;;
+	"50 50 0 50")	echo tile-bottom-left ;;
+	"50 50 50 50")	echo tile-bottom-right ;;
+	esac
+}
+
 emit_float_front()
 {
 	echo "WindowId $1 Raise"
@@ -893,6 +926,7 @@ cmd_insert()
 		fi
 		rotate_id "$_slot" "$_i" "$_w" "$_h"
 		retile_slot "$_slot"
+		emit_bosd "$osd"
 		return 0
 	fi
 	_old=$( forget_id "$_id" )
@@ -901,6 +935,7 @@ cmd_insert()
 	if [ "$_old" ] && [ "$_old" != "$_slot" ]; then
 		retile_slot "$_old"
 	fi
+	emit_bosd "$osd"
 }
 
 cmd_back()
@@ -943,6 +978,7 @@ cmd_back()
 		retile_slot "$_slot"
 		emit_restore "$_id"
 		emit_float_front "$_id"
+		emit_bosd tile-rotate
 		return 0
 	fi
 	_n=$( count_ids "$_slot" )
@@ -954,10 +990,12 @@ cmd_back()
 		fi
 		emit_restore "$_id"
 		emit_float_front "$_id"
+		emit_bosd tile-rotate
 		return 0
 	fi
 	rotate_back_id "$_slot" "$_i" "$_w" "$_h"
 	retile_slot "$_slot"
+	emit_bosd tile-rotate
 }
 
 cmd_mapped()
@@ -1042,9 +1080,11 @@ cmd_snap()
 		if [ "$_old" ] && [ "$_old" != "$_slot" ]; then
 			retile_slot "$_old"
 		fi
+		emit_bosd "$( osd_snap "$_hp" "$_vp" "$_xp" "$_yp" )"
 		return 0
 	fi
 	emit_slot "$_id" "$_slot" "$_hp" "$_vp" "$_xp" "$_yp" "$_w" "$_h"
+	emit_bosd "$( osd_snap "$_hp" "$_vp" "$_xp" "$_yp" )"
 }
 
 cmd_remove()
@@ -1062,6 +1102,7 @@ cmd_remove()
 	fi
 	emit_restore "$_id"
 	emit_float_front "$_id"
+	emit_bosd tile-down
 }
 
 cmd_drop()
@@ -1193,6 +1234,7 @@ shift # verb
 
 case "$verb" in
 insert)
+	osd=tile-insert
 	cmd_insert "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}"
 	;;
 back)

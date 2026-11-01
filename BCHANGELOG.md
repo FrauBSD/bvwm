@@ -16,6 +16,12 @@ from (e.g. `1.1.5`) plus BVWM notes.
   and F4 is behind Fn when Fn-lock is on. The chord is marked so
   Super release does not open the start menu. CirculateSkip windows
   (pager, taskbar) are left alone.
+- **Super-arrow tile chords** show a bosd glyph for the direction
+  the window is moving: halves, quarters, the working-area fill,
+  float-drop, insert, and rotate. `fvwm-tile` emits
+  `bosd tile-<place> 2` for that chord. A window mapped into an
+  auto-tile does not. Super+T still uses `tile-on` and `tile-float`.
+  Super+W has no glyph.
 
 ### Fixed
 
