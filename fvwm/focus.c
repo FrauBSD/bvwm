@@ -335,11 +335,14 @@ static void _set_focus_to_fwin(
 	else if (focus_does_accept_input_focus(fw))
 	{
 		/* Window will accept input focus */
-		if (Scr.StolenFocusWin == w && Scr.UnknownWinFocused != None)
+		if (Scr.StolenFocusWin == w && Scr.UnknownWinFocused != None &&
+		    !IS_EWMH_FULLSCREEN(fw))
 		{
 			/* Without this FocusIn is not generated on the
 			 * window if it was focuesed when the unmanaged
-			 * window took focus. */
+			 * window took focus. Skip it for fullscreen:
+			 * the FocusOut makes the client leave
+			 * fullscreen. */
 			FOCUS_SET(Scr.NoFocusWin, NULL);
 
 		}

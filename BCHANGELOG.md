@@ -7,6 +7,23 @@ from (e.g. `1.1.5`) plus BVWM notes.
 
 ---
 
+## 1.1.5-bvwm.9
+
+### Fixed
+
+- **The .8 fullscreen size guard is reverted.** Ignoring a resize
+  or maximize smaller than the monitor did not keep an EWMH
+  fullscreen client from leaving fullscreen. Those sizes are no
+  longer ignored, and `Maximize False` is no longer special-cased
+  on that path.
+- **Fullscreen keeps the keyboard.** `DeleteFocus` and the
+  stolen-focus path park input on `NoFocusWin`, then focus the
+  client again. The FocusOut made the client leave fullscreen
+  and iconify. Both parks are skipped while the focused window
+  is EWMH fullscreen.
+
+---
+
 ## 1.1.5-bvwm.8
 
 ### Added
