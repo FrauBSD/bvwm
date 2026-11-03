@@ -687,16 +687,20 @@ emit_restore()
 
 #
 # PipeRead bosd line. An empty name is a map joining the layout,
-# not a user chord, and prints nothing.
+# not a user chord, and prints nothing. A window move uses the
+# output that holds the focused window. The auto-tile toggle
+# passes mouse: the pointer's monitor, desk, and page.
 #
 emit_bosd()
 {
-	local _name
+	local _name _sel
 
 	_name="$1"
+	_sel="$2"
 	[ "$_name" ] || return 0
 	command -v bosd >/dev/null 2>&1 || return 0
-	echo "Exec exec bosd $_name 2"
+	[ "$_sel" ] || _sel=focus
+	echo "Exec exec bosd -S $_sel $_name 2"
 }
 
 #
@@ -972,7 +976,7 @@ cmd_insert()
 		fi
 		rotate_id "$_slot" "$_i" "$_w" "$_h"
 		retile_slot "$_slot"
-		emit_bosd "$osd"
+		emit_bosd "$osd" focus
 		return 0
 	fi
 	_old=$( forget_id "$_id" )
@@ -981,7 +985,7 @@ cmd_insert()
 	if [ "$_old" ] && [ "$_old" != "$_slot" ]; then
 		retile_slot "$_old"
 	fi
-	emit_bosd "$osd"
+	emit_bosd "$osd" focus
 }
 
 cmd_back()
@@ -1024,7 +1028,7 @@ cmd_back()
 		retile_slot "$_slot"
 		emit_restore "$_id"
 		emit_float_front "$_id"
-		emit_bosd tile-rotate
+		emit_bosd tile-rotate focus
 		return 0
 	fi
 	_n=$( count_ids "$_slot" )
@@ -1036,12 +1040,12 @@ cmd_back()
 		fi
 		emit_restore "$_id"
 		emit_float_front "$_id"
-		emit_bosd tile-rotate
+		emit_bosd tile-rotate focus
 		return 0
 	fi
 	rotate_back_id "$_slot" "$_i" "$_w" "$_h"
 	retile_slot "$_slot"
-	emit_bosd tile-rotate
+	emit_bosd tile-rotate focus
 }
 
 cmd_mapped()
@@ -1127,11 +1131,11 @@ cmd_snap()
 		if [ "$_old" ] && [ "$_old" != "$_slot" ]; then
 			retile_slot "$_old"
 		fi
-		emit_bosd "$( osd_snap "$_hp" "$_vp" "$_xp" "$_yp" )"
+		emit_bosd "$( osd_snap "$_hp" "$_vp" "$_xp" "$_yp" )" focus
 		return 0
 	fi
 	emit_slot "$_id" "$_slot" "$_hp" "$_vp" "$_xp" "$_yp" "$_w" "$_h"
-	emit_bosd "$( osd_snap "$_hp" "$_vp" "$_xp" "$_yp" )"
+	emit_bosd "$( osd_snap "$_hp" "$_vp" "$_xp" "$_yp" )" focus
 }
 
 cmd_remove()
@@ -1150,7 +1154,7 @@ cmd_remove()
 	rm -f "$( pct_file "$_id" )"
 	emit_restore "$_id"
 	emit_float_front "$_id"
-	emit_bosd tile-down
+	emit_bosd tile-down focus
 }
 
 cmd_drop()
@@ -1305,8 +1309,8 @@ cmd_send()
 		return 0
 	fi
 	case "$_dir" in
-	next)	emit_bosd tile-next ;;
-	prev)	emit_bosd tile-prev ;;
+	next)	emit_bosd tile-next focus ;;
+	prev)	emit_bosd tile-prev focus ;;
 	esac
 	_slot=$( make_slot "$_to" "$4" "$5" "$6" )
 	_old=$( forget_id "$_id" )
@@ -1386,15 +1390,11 @@ cmd_auto_toggle()
 		else
 			echo UnsetEnv FVWM_TILE_AUTO
 		fi
-		if command -v bosd >/dev/null 2>&1; then
-			echo "Exec exec bosd tile-float 2"
-		fi
+		emit_bosd tile-float mouse
 	else
 		: > "$( slot_dir "$_slot" )/auto"
 		echo SetEnv FVWM_TILE_AUTO 1
-		if command -v bosd >/dev/null 2>&1; then
-			echo "Exec exec bosd tile-on 2"
-		fi
+		emit_bosd tile-on mouse
 		echo TileHarvest
 	fi
 }

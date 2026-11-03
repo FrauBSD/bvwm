@@ -39,6 +39,9 @@ from (e.g. `1.1.5`) plus BVWM notes.
 - A floating Super+arrow snap meets the taskbar. The font
   increment was rounding the frame short of that edge. Auto-tile
   already overrides the increment.
+- Tile glyphs name the output they describe. A window move uses
+  `bosd -S focus`. Super+T uses `bosd -S mouse`, because that
+  toggle is the pointer's monitor, desk, and page.
 
 ---
 
