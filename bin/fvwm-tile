@@ -574,8 +574,14 @@ emit_prep()
 	_slot="$2"
 	echo "WindowId $_id Iconify off"
 	echo "WindowId $_id WindowShade False"
+	# Font increment rounds the frame short of the requested edge,
+	# which leaves a gap above the taskbar. Auto-tile also drops
+	# the title. A floating snap keeps the title and only overrides
+	# the increment. Super+Down clears the style.
 	if auto_on "$_slot"; then
 		echo "WindowId $_id WindowStyle NoTitle, NoHandles, BorderWidth 0, ResizeHintOverride"
+	else
+		echo "WindowId $_id WindowStyle ResizeHintOverride"
 	fi
 }
 

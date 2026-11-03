@@ -30,6 +30,9 @@ from (e.g. `1.1.5`) plus BVWM notes.
   output already in use. After a zap the held sink could name a
   different output than the one playing, so the gauge moved and the
   audio did not.
+- A floating Super+arrow snap meets the taskbar. The font
+  increment was rounding the frame short of that edge. Auto-tile
+  already overrides the increment.
 
 ---
 
