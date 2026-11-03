@@ -70,6 +70,45 @@ slot_dir()
 	echo "$DIR/slot/$1"
 }
 
+#
+# Last Super+arrow fractions for this window (hp vp xp yp). Send
+# reapplies them on the destination output.
+#
+pct_file()
+{
+	echo "$DIR/pct/$1"
+}
+
+remember_pct()
+{
+	local _id _d
+
+	_id="$1"
+	_d="$DIR/pct"
+	mkdir -p "$_d"
+	echo "$2 $3 $4 $5" > "$_d/$_id"
+}
+
+#
+# Pixel math is a percent or two off the working area. Snap to the
+# fractions the tile chords actually use.
+#
+pct_snap()
+{
+	local _n _b _d
+
+	_n="$1"
+	for _b in 0 25 50 75 100; do
+		_d=$(( _n - _b ))
+		[ "$_d" -lt 0 ] && _d=$(( -_d ))
+		if [ "$_d" -le 2 ]; then
+			echo "$_b"
+			return 0
+		fi
+	done
+	echo "$_n"
+}
+
 ensure_slot()
 {
 	mkdir -p "$( slot_dir "$1" )"
@@ -1072,6 +1111,7 @@ cmd_snap()
 		echo Nop
 		return 0
 	}
+	remember_pct "$_id" "$_hp" "$_vp" "$_xp" "$_yp"
 	if auto_on "$_slot"; then
 		_old=$( forget_id "$_id" )
 		place_new "$_id" "$_slot" "$_w" "$_h"
@@ -1101,6 +1141,7 @@ cmd_remove()
 	if [ "$_slot" ]; then
 		retile_slot "$_slot"
 	fi
+	rm -f "$( pct_file "$_id" )"
 	emit_restore "$_id"
 	emit_float_front "$_id"
 	emit_bosd tile-down
@@ -1180,13 +1221,62 @@ cmd_harvest_apply()
 }
 
 #
+# Fractions of the source output, from the geometry captured before
+# the move. Prints hp vp xp yp.
+#
+pct_from_geom()
+{
+	local _sw _sh _sx _sy _ww _wh _wx _wy _tb _prim _from
+	local _bw _bh _rx _ry _hp _vp _xp _yp
+
+	_from="$1"
+	_prim="$2"
+	_tb="$3"
+	_sw="$4"
+	_sh="$5"
+	_sx="$6"
+	_sy="$7"
+	_ww="$8"
+	_wh="$9"
+	_wx="${10}"
+	_wy="${11}"
+	_bw="$_sw"
+	_bh="$_sh"
+	if [ "$_from" = "$_prim" ] && [ "$_tb" -gt 0 ] 2> /dev/null &&
+	   [ "$_sh" -gt "$_tb" ]; then
+		_bh=$(( _sh - _tb ))
+	fi
+	[ "$_bw" -gt 0 ] 2> /dev/null && [ "$_bh" -gt 0 ] 2> /dev/null ||
+		return 1
+	_rx=$(( _wx - _sx ))
+	_ry=$(( _wy - _sy ))
+	[ "$_rx" -lt 0 ] && _rx=0
+	[ "$_ry" -lt 0 ] && _ry=0
+	_hp=$(( _ww * 100 / _bw ))
+	_vp=$(( _wh * 100 / _bh ))
+	_xp=$(( _rx * 100 / _bw ))
+	_yp=$(( _ry * 100 / _bh ))
+	_hp=$( pct_snap "$_hp" )
+	_vp=$( pct_snap "$_vp" )
+	_xp=$( pct_snap "$_xp" )
+	_yp=$( pct_snap "$_yp" )
+	echo "$_hp $_vp $_xp $_yp"
+}
+
+#
 # Window already moved (MoveToScreen next|prev). Drop it from the old
 # cell. Fullscreen stays fullscreen on the destination. An auto-tile
-# cell takes the window and reflows. Same monitor is a no-op.
+# cell takes the window and reflows. A manual tile (the stored
+# fractions, or State 3) is those fractions of the destination. A
+# plain maximize fills the destination. A window that left an
+# auto-tile cell for a monitor that is not auto-tiled becomes a
+# normal floating window at the top-left of that output. Same
+# monitor is a no-op.
 #
 cmd_send()
 {
-	local _from _to _id _slot _w _h _old _fs
+	local _from _to _id _slot _w _h _old _fs _st _max _pf
+	local _hp _vp _xp _yp
 
 	_from="$1"
 	_to="$2"
@@ -1194,6 +1284,8 @@ cmd_send()
 	_w="$7"
 	_h="$8"
 	_fs="${15}"
+	_st="${16}"
+	_max="${17}"
 	remember_strut "$9" "${10}"
 	remember_view "$_to" "${11}" "${12}" "${13}" "${14}"
 
@@ -1217,6 +1309,36 @@ cmd_send()
 	if auto_on "$_slot"; then
 		place_new "$_id" "$_slot" "$_w" "$_h"
 		retile_slot "$_slot"
+		return 0
+	fi
+	# Left an auto-tile for a floating monitor. Move with no
+	# position is an interactive drag; +0 +0 is the output origin.
+	if [ "$_old" ]; then
+		rm -f "$( pct_file "$_id" )"
+		emit_restore "$_id"
+		echo "WindowId $_id Move screen $_to +0 +0"
+		return 0
+	fi
+	_pf=$( pct_file "$_id" )
+	if [ -f "$_pf" ]; then
+		read _hp _vp _xp _yp < "$_pf" || : errors ignored
+	elif [ "$_st" = 1 ]; then
+		_hp=$( pct_from_geom "$_from" "$9" "${10}" "${18}" \
+			"${19}" "${20}" "${21}" "${22}" "${23}" \
+			"${24}" "${25}" ) || _hp=
+		if [ "$_hp" ]; then
+			read _hp _vp _xp _yp <<EOF
+$_hp
+EOF
+		fi
+	fi
+	if [ "$_hp" ]; then
+		emit_slot "$_id" "$_slot" "$_hp" "$_vp" "$_xp" "$_yp" \
+			"$_w" "$_h"
+		return 0
+	fi
+	if [ "$_max" = 1 ]; then
+		echo "WindowId $_id Maximize screen $_to True 100 100"
 		return 0
 	fi
 	echo Nop
@@ -1309,7 +1431,7 @@ auto-toggle)
 	cmd_auto_toggle "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}"
 	;;
 send)
-	cmd_send "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}" "${15}"
+	cmd_send "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}" "${15}" "${16}" "${17}" "${18}" "${19}" "${20}" "${21}" "${22}" "${23}" "${24}" "${25}"
 	;;
 *)
 	usage

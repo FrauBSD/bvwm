@@ -17,6 +17,8 @@ from (e.g. `1.1.5`) plus BVWM notes.
   wraps. A fullscreen window is resized to fill that output. The
   cell it left reflows when it was auto-tiled; an auto-tiled cell
   on the destination takes the window. One output does nothing.
+  A window that leaves an auto-tiled cell for a monitor that is
+  not auto-tiled becomes a normal floating window there.
 
 ---
 
