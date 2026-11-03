@@ -2332,10 +2332,144 @@ void CMD_MoveToPage(F_CMD_ARGS)
 	update_fvwm_monitor(exc->w.fw);
 }
 
+/*
+ * Next or previous output in geometric order (top to bottom, then
+ * left to right), wrapping. Disabled outputs are skipped. One output
+ * has no neighbor.
+ */
+static struct monitor *
+monitor_neighbor(struct monitor *from, int dir)
+{
+	struct monitor *m;
+	struct monitor *first;
+	struct monitor *before;
+	struct monitor *after;
+	struct monitor *prev;
+	int n;
+	int found;
+
+	if (from == NULL || dir == 0)
+	{
+		return NULL;
+	}
+	first = NULL;
+	before = NULL;
+	after = NULL;
+	prev = NULL;
+	n = 0;
+	found = 0;
+	RB_FOREACH(m, monitors, &monitor_q)
+	{
+		if (m->flags & MONITOR_DISABLED)
+		{
+			continue;
+		}
+		n++;
+		if (first == NULL)
+		{
+			first = m;
+		}
+		if (m == from)
+		{
+			found = 1;
+			before = prev;
+		}
+		if (prev == from)
+		{
+			after = m;
+		}
+		prev = m;
+	}
+	if (!found || n < 2)
+	{
+		return NULL;
+	}
+	if (dir > 0)
+	{
+		return (after != NULL) ? after : first;
+	}
+
+	return (before != NULL) ? before : prev;
+}
+
+/*
+ * Shift the frame by the same vector as the two outputs. A tiled
+ * window is often as large as its output, so the old "move until the
+ * rectangles touch" step left it on the source. The saved normal
+ * geometry is left alone when the window is maximized.
+ */
+static void
+monitor_translate(FvwmWindow *fw, struct monitor *from, struct monitor *to)
+{
+	int x;
+	int y;
+
+	if (from == NULL || to == NULL || from->si == NULL || to->si == NULL)
+	{
+		return;
+	}
+	x = fw->g.frame.x + (to->si->x - from->si->x);
+	y = fw->g.frame.y + (to->si->y - from->si->y);
+	frame_setup_window(
+		fw, x, y, fw->g.frame.width, fw->g.frame.height, True);
+	update_absolute_geometry(fw);
+	maximize_adjust_offset(fw);
+	XFlush(dpy);
+}
+
 void CMD_MoveToScreen(F_CMD_ARGS)
 {
+	char *token;
+	char *rest;
+	struct monitor *step;
+	struct monitor *from;
+	FvwmWindow *fw;
+	int step_dir;
+
+	fw = exc->w.fw;
+	step_dir = 0;
+	step = NULL;
+	token = PeekToken(action, &rest);
+	if (fw != NULL && token != NULL)
+	{
+		if (StrEquals(token, "next"))
+		{
+			step_dir = 1;
+		}
+		else if (StrEquals(token, "prev"))
+		{
+			step_dir = -1;
+		}
+	}
+	if (step_dir != 0)
+	{
+		step = monitor_neighbor(fw->m, step_dir);
+		if (step == NULL || step == fw->m || step->si == NULL ||
+		    step->si->name == NULL || fw->m == NULL ||
+		    fw->m->si == NULL)
+		{
+			return;
+		}
+		from = fw->m;
+		fw->m = step;
+		if (fw->Desk != step->virtual_scr.CurrentDesk)
+		{
+			fw->UpdateDesk = step->virtual_scr.CurrentDesk;
+		}
+		monitor_translate(fw, from, step);
+		update_fvwm_monitor(fw);
+		/* Geometry search can point at the source after a
+		 * maximized window moves. The neighbor is the one the
+		 * key asked for. */
+		fw->m = step;
+		return;
+	}
 	_move_window(F_PASS_ARGS, False, MOVE_SCREEN);
-	update_fvwm_monitor(exc->w.fw);
+	if (fw == NULL)
+	{
+		return;
+	}
+	update_fvwm_monitor(fw);
 }
 
 static void update_pos(

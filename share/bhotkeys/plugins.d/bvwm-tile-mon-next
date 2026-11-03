@@ -1,0 +1,13 @@
+id bvwm-tile-mon-next
+group x11-wm/bvwm
+label Send to next monitor
+chord Super+Shift+period
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command Current TileSendMon next
+repeat 0
+greeter 0
+listen 0
+desc Send the focused window to the next monitor. bvwm owns the key.

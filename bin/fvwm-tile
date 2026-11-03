@@ -33,6 +33,7 @@ usage()
 	echo "       $pgm harvest-add id screen desk pagex pagey w h" >&2
 	echo "       $pgm harvest-apply screen desk pagex pagey" >&2
 	echo "       $pgm auto-toggle screen desk pagex pagey w h" >&2
+	echo "       $pgm send from to id desk pagex pagey w h" >&2
 	echo "Options:" >&2
 	echo "	(none)" >&2
 }
@@ -1178,6 +1179,44 @@ cmd_harvest_apply()
 	fi
 }
 
+#
+# Window already moved (MoveToScreen next|prev). Drop it from the old
+# cell. An auto-tile cell takes the window and reflows. Same monitor
+# is a no-op.
+#
+cmd_send()
+{
+	local _from _to _id _slot _w _h _old
+
+	_from="$1"
+	_to="$2"
+	_id="$3"
+	_w="$7"
+	_h="$8"
+	remember_strut "$9" "${10}"
+	remember_view "$_to" "${11}" "${12}" "${13}" "${14}"
+
+	[ "$_id" ] && [ "$_to" ] || {
+		echo Nop
+		return 0
+	}
+	if [ "$_from" = "$_to" ]; then
+		echo Nop
+		return 0
+	fi
+	_slot=$( make_slot "$_to" "$4" "$5" "$6" )
+	_old=$( forget_id "$_id" )
+	if [ "$_old" ]; then
+		retile_slot "$_old"
+	fi
+	if auto_on "$_slot"; then
+		place_new "$_id" "$_slot" "$_w" "$_h"
+		retile_slot "$_slot"
+		return 0
+	fi
+	echo Nop
+}
+
 cmd_auto_toggle()
 {
 	local _slot _f _id
@@ -1263,6 +1302,9 @@ harvest-apply)
 	;;
 auto-toggle)
 	cmd_auto_toggle "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}"
+	;;
+send)
+	cmd_send "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}"
 	;;
 *)
 	usage

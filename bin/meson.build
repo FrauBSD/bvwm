@@ -128,6 +128,8 @@ install_data(
         '../share/bhotkeys/plugins.d/bvwm-tile-down',
         '../share/bhotkeys/plugins.d/bvwm-tile-insert',
         '../share/bhotkeys/plugins.d/bvwm-tile-left',
+        '../share/bhotkeys/plugins.d/bvwm-tile-mon-next',
+        '../share/bhotkeys/plugins.d/bvwm-tile-mon-prev',
         '../share/bhotkeys/plugins.d/bvwm-tile-right',
         '../share/bhotkeys/plugins.d/bvwm-tile-rotate',
         '../share/bhotkeys/plugins.d/bvwm-tile-top',
