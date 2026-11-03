@@ -26,6 +26,10 @@ from (e.g. `1.1.5`) plus BVWM notes.
   client holding the keyboard, the Super press reaches bvwm only
   after the chord list takes the grab, and that late press was
   deleting the flag bhotkeys had just written for Super+/.
+- The first start of a session points the volume keys at the
+  output already in use. After a zap the held sink could name a
+  different output than the one playing, so the gauge moved and the
+  audio did not.
 
 ---
 
