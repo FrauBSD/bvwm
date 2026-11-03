@@ -20,6 +20,13 @@ from (e.g. `1.1.5`) plus BVWM notes.
   A window that leaves an auto-tiled cell for a monitor that is
   not auto-tiled becomes a normal floating window there.
 
+### Fixed
+
+- `super-menu-arm` does not clear the chord flag. With a fullscreen
+  client holding the keyboard, the Super press reaches bvwm only
+  after the chord list takes the grab, and that late press was
+  deleting the flag bhotkeys had just written for Super+/.
+
 ---
 
 ## 1.1.5-bvwm.9
