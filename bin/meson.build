@@ -114,6 +114,12 @@ bhotkeys_bvwm_run = install_data(
     install_mode: install_mask_755,
 )
 
+fvwm_xterm = install_data(
+    'fvwm-xterm',
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
 install_data(
     [
         '../share/bhotkeys/plugins.d/bvwm-focus-back',
@@ -136,6 +142,7 @@ install_data(
         '../share/bhotkeys/plugins.d/bvwm-tile-top-left',
         '../share/bhotkeys/plugins.d/bvwm-tile-top-right',
         '../share/bhotkeys/plugins.d/bvwm-tile-up',
+        '../share/bhotkeys/plugins.d/bvwm-xterm',
     ],
     install_dir: join_paths(get_option('datadir'), 'bhotkeys', 'plugins.d'),
 )

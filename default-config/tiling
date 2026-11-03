@@ -270,6 +270,13 @@ AddToFunc   TileClose
 + I Current (CirculateSkip) Break
 + I Current Close
 
+# Super+Enter opens fvwm-xterm. SuperChord runs first so releasing
+# Super does not open the start menu.
+DestroyFunc BvwmXTerm
+AddToFunc   BvwmXTerm
++ I SuperChord
++ I Exec exec fvwm-xterm
+
 # Super+Left/Right: halves. Super+Up: fill working area (covers pager).
 # Super+Down: restore floating (also drops the window from Super+T layout).
 # Super+Shift+Up/Down: top/bottom halves. Super+Shift+Left/Right: top quarters.
@@ -280,6 +287,8 @@ AddToFunc   TileClose
 # Super+` / Super+Shift+`: same, limited to the focused window's class.
 # Super+W: close the focused window (Alt+F4). A tile has no close
 # button, and F4 is behind Fn when Fn-lock is on.
+# Super+Enter: the Start-menu terminal. SuperChord runs first so
+# release does not open the menu.
 Key Left	A 4	Current TileApply 50 100 0 0
 Key Right	A 4	Current TileApply 50 100 50 0
 Key Up		A 4	Current TileMaximize
@@ -296,6 +305,7 @@ Key t		A 4	TileAutoToggle
 Key T		A 4	TileAutoToggle
 Key w		A 4	TileClose
 Key W		A 4	TileClose
+Key Return	A 4	BvwmXTerm
 Key comma	A MS	-
 Key period	A MS	-
 Key comma	A 4S	Current TileSendMon prev

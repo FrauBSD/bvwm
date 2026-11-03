@@ -1,0 +1,4 @@
+#!/bin/sh
+# Terminal matching Start menu / FvwmXTerm (Albert + menus share this).
+exec uxterm -name bsd-xterm -sb -sl 400 -ls -r -si -sk \
+	-fn "-misc-fixed-medium-r-normal--20-200-75-75-c-100-iso10646-1" "$@"

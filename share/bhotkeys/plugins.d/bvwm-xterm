@@ -1,0 +1,13 @@
+id bvwm-xterm
+group x11-wm/bvwm
+label Terminal
+chord Super+Return
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command BvwmXTerm
+repeat 0
+greeter 0
+listen 0
+desc Super+Enter. Open a terminal. bvwm owns the key.
