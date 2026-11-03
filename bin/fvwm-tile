@@ -1281,12 +1281,12 @@ pct_from_geom()
 # plain maximize fills the destination. A window that left an
 # auto-tile cell for a monitor that is not auto-tiled becomes a
 # normal floating window at the top-left of that output. Same
-# monitor is a no-op. A real send shows tile-next or tile-prev.
+# monitor is a no-op. The glyph is shown before MoveToScreen.
 #
 cmd_send()
 {
 	local _from _to _id _slot _w _h _old _fs _st _max _pf
-	local _hp _vp _xp _yp _dir
+	local _hp _vp _xp _yp
 
 	_from="$1"
 	_to="$2"
@@ -1296,7 +1296,6 @@ cmd_send()
 	_fs="${15}"
 	_st="${16}"
 	_max="${17}"
-	_dir="${26}"
 	remember_strut "$9" "${10}"
 	remember_view "$_to" "${11}" "${12}" "${13}" "${14}"
 
@@ -1308,10 +1307,6 @@ cmd_send()
 		echo Nop
 		return 0
 	fi
-	case "$_dir" in
-	next)	emit_bosd tile-next focus ;;
-	prev)	emit_bosd tile-prev focus ;;
-	esac
 	_slot=$( make_slot "$_to" "$4" "$5" "$6" )
 	_old=$( forget_id "$_id" )
 	if [ "$_old" ]; then
@@ -1442,7 +1437,7 @@ auto-toggle)
 	cmd_auto_toggle "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}"
 	;;
 send)
-	cmd_send "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}" "${15}" "${16}" "${17}" "${18}" "${19}" "${20}" "${21}" "${22}" "${23}" "${24}" "${25}" "${26}"
+	cmd_send "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}" "${15}" "${16}" "${17}" "${18}" "${19}" "${20}" "${21}" "${22}" "${23}" "${24}" "${25}"
 	;;
 *)
 	usage

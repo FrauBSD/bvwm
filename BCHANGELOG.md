@@ -19,8 +19,8 @@ from (e.g. `1.1.5`) plus BVWM notes.
   on the destination takes the window. One output does nothing.
   A window that leaves an auto-tiled cell for a monitor that is
   not auto-tiled becomes a normal floating window there.
-  A send shows `tile-prev` or `tile-next`. Staying on the same
-  output does not.
+  `tile-prev` or `tile-next` is shown on the current screen
+  before the window moves. Staying on the same output does not.
 - **Super+Enter** runs `fvwm-xterm`, the same terminal as the Start
   menu. The chord is marked first, so releasing Super does not
   also open the menu. `share/bhotkeys/plugins.d/bvwm-xterm`
