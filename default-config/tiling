@@ -227,7 +227,8 @@ AddToFunc   SuperGraveBack
 # fractions of the destination (half of eDP-1 stays half of DP-4). A
 # maximized window is maximized there. A window that leaves an auto-tile
 # cell for a monitor that is not auto-tiled becomes a normal floating
-# window at that output's top-left. SuperChord runs first so releasing
+# window at that output's top-left. A send shows tile-prev or tile-next.
+# Staying on one output does not. SuperChord runs first so releasing
 # Shift and then Super does not open the start menu.
 DestroyFunc TileSendMon
 AddToFunc   TileSendMon
@@ -258,7 +259,7 @@ AddToFunc   TileSendMon
 + I InfoStoreAdd bvwm_tile_wx $[w.x]
 + I InfoStoreAdd bvwm_tile_wy $[w.y]
 + I MoveToScreen $0
-+ I PipeRead `fvwm-tile send $[infostore.bvwm_tile_from] $[w.screen] $[w.id] $[monitor.$[w.screen].desk] $[monitor.$[w.screen].pagex] $[monitor.$[w.screen].pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height] $[infostore.bvwm_tile_fs] $[infostore.bvwm_tile_st] $[infostore.bvwm_tile_max] $[infostore.bvwm_tile_sw] $[infostore.bvwm_tile_sh] $[infostore.bvwm_tile_sx] $[infostore.bvwm_tile_sy] $[infostore.bvwm_tile_ww] $[infostore.bvwm_tile_wh] $[infostore.bvwm_tile_wx] $[infostore.bvwm_tile_wy]`
++ I PipeRead `fvwm-tile send $[infostore.bvwm_tile_from] $[w.screen] $[w.id] $[monitor.$[w.screen].desk] $[monitor.$[w.screen].pagex] $[monitor.$[w.screen].pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height] $[infostore.bvwm_tile_fs] $[infostore.bvwm_tile_st] $[infostore.bvwm_tile_max] $[infostore.bvwm_tile_sw] $[infostore.bvwm_tile_sh] $[infostore.bvwm_tile_sx] $[infostore.bvwm_tile_sy] $[infostore.bvwm_tile_ww] $[infostore.bvwm_tile_wh] $[infostore.bvwm_tile_wx] $[infostore.bvwm_tile_wy] $0`
 
 # Close is the Alt+F4 action. A bare Close here asks for a click:
 # the key has no window. Current names the focus.
