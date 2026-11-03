@@ -577,6 +577,11 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			SET_MAXIMIZED(mask, on);
 			SETM_MAXIMIZED(mask, 1);
 		}
+		else if (StrEquals(cond,"EWMHFullscreen"))
+		{
+			SET_EWMH_FULLSCREEN(mask, on);
+			SETM_EWMH_FULLSCREEN(mask, 1);
+		}
 		else if (StrEquals(cond,"FixedSize"))
 		{
 			/* don't set mask here, because we make the test here

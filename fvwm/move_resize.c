@@ -2417,6 +2417,44 @@ monitor_translate(FvwmWindow *fw, struct monitor *from, struct monitor *to)
 	XFlush(dpy);
 }
 
+/*
+ * Keep EWMH fullscreen and size the frame to the monitor the window
+ * is on now. ResizeMoveMaximize is what places the client at the
+ * top-left of that output (borders included). A raw frame resize
+ * leaves the client inset. The saved restore geometry is left alone.
+ */
+static void
+fullscreen_reflow(FvwmWindow *fw)
+{
+	rectangle scr_g;
+	size_borders b;
+	int page_x;
+	int page_y;
+	char cmd[160];
+	struct monitor *m;
+
+	m = fw->m;
+	if (m == NULL || m->si == NULL)
+	{
+		return;
+	}
+	scr_g.x = m->si->x;
+	scr_g.y = m->si->y;
+	scr_g.width = m->si->w;
+	scr_g.height = m->si->h;
+	get_window_borders(fw, &b);
+	get_page_offset_check_visible(&page_x, &page_y, fw);
+	snprintf(cmd, sizeof(cmd),
+		"ResizeMoveMaximize %dp %dp +%dp +%dp ewmhiwa",
+		scr_g.width, scr_g.height,
+		scr_g.x - b.top_left.width + page_x,
+		scr_g.y - b.top_left.height + page_y);
+	SET_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw, 1);
+	execute_function_override_window(NULL, NULL, cmd, NULL, 0, fw);
+	SET_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw, 0);
+	execute_function_override_window(NULL, NULL, "Raise", NULL, 0, fw);
+}
+
 void CMD_MoveToScreen(F_CMD_ARGS)
 {
 	char *token;
@@ -2456,7 +2494,14 @@ void CMD_MoveToScreen(F_CMD_ARGS)
 		{
 			fw->UpdateDesk = step->virtual_scr.CurrentDesk;
 		}
-		monitor_translate(fw, from, step);
+		if (IS_EWMH_FULLSCREEN(fw))
+		{
+			fullscreen_reflow(fw);
+		}
+		else
+		{
+			monitor_translate(fw, from, step);
+		}
 		update_fvwm_monitor(fw);
 		/* Geometry search can point at the source after a
 		 * maximized window moves. The neighbor is the one the

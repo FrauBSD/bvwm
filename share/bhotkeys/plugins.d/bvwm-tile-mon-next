@@ -10,4 +10,4 @@ command Current TileSendMon next
 repeat 0
 greeter 0
 listen 0
-desc Send the focused window to the next monitor. bvwm owns the key.
+desc Send the focused window to the next monitor. Fullscreen fills that monitor. bvwm owns the key.

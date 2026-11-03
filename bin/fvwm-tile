@@ -1181,18 +1181,19 @@ cmd_harvest_apply()
 
 #
 # Window already moved (MoveToScreen next|prev). Drop it from the old
-# cell. An auto-tile cell takes the window and reflows. Same monitor
-# is a no-op.
+# cell. Fullscreen stays fullscreen on the destination. An auto-tile
+# cell takes the window and reflows. Same monitor is a no-op.
 #
 cmd_send()
 {
-	local _from _to _id _slot _w _h _old
+	local _from _to _id _slot _w _h _old _fs
 
 	_from="$1"
 	_to="$2"
 	_id="$3"
 	_w="$7"
 	_h="$8"
+	_fs="${15}"
 	remember_strut "$9" "${10}"
 	remember_view "$_to" "${11}" "${12}" "${13}" "${14}"
 
@@ -1208,6 +1209,10 @@ cmd_send()
 	_old=$( forget_id "$_id" )
 	if [ "$_old" ]; then
 		retile_slot "$_old"
+	fi
+	if [ "$_fs" = 1 ]; then
+		echo "WindowId $_id Raise"
+		return 0
 	fi
 	if auto_on "$_slot"; then
 		place_new "$_id" "$_slot" "$_w" "$_h"
@@ -1304,7 +1309,7 @@ auto-toggle)
 	cmd_auto_toggle "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}"
 	;;
 send)
-	cmd_send "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}"
+	cmd_send "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}" "${15}"
 	;;
 *)
 	usage

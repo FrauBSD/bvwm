@@ -221,8 +221,9 @@ AddToFunc   SuperGraveBack
 
 # Super+Shift+comma / Super+Shift+period: dwm tagmon. Send the focused
 # window to the previous or next output (top to bottom, then left to
-# right, wrapping). One output does nothing. The old auto-tile cell
-# reflows. An auto-tile cell on the destination takes the window.
+# right, wrapping). A fullscreen window is sized to that output.
+# One output does nothing. The old auto-tile cell reflows. An auto-tile
+# cell on the destination takes the window.
 # SuperChord runs first so releasing Shift and then Super does not
 # open the start menu.
 DestroyFunc TileSendMon
@@ -238,9 +239,11 @@ AddToFunc   TileSendMon
 + I ThisWindow ("FvwmButtons") Break
 + I ThisWindow ("Conky") Break
 + I ThisWindow ("Conky*") Break
++ I ThisWindow (EWMHFullscreen) InfoStoreAdd bvwm_tile_fs 1
++ I TestRc (NoMatch) InfoStoreAdd bvwm_tile_fs 0
 + I InfoStoreAdd bvwm_tile_from $[w.screen]
 + I MoveToScreen $0
-+ I PipeRead `fvwm-tile send $[infostore.bvwm_tile_from] $[w.screen] $[w.id] $[monitor.$[w.screen].desk] $[monitor.$[w.screen].pagex] $[monitor.$[w.screen].pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height]`
++ I PipeRead `fvwm-tile send $[infostore.bvwm_tile_from] $[w.screen] $[w.id] $[monitor.$[w.screen].desk] $[monitor.$[w.screen].pagex] $[monitor.$[w.screen].pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height] $[infostore.bvwm_tile_fs]`
 
 # Close is the Alt+F4 action. A bare Close here asks for a click:
 # the key has no window. Current names the focus.

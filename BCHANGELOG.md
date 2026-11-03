@@ -14,9 +14,9 @@ from (e.g. `1.1.5`) plus BVWM notes.
 - **Super+Shift+comma** and **Super+Shift+period** in `default-config/tiling`
   send the focused window to the previous or next output (dwm
   `tagmon`). Order is top to bottom, then left to right, and it
-  wraps. The cell it left reflows when it was auto-tiled; an
-  auto-tiled cell on the destination takes the window. One output
-  does nothing.
+  wraps. A fullscreen window is resized to fill that output. The
+  cell it left reflows when it was auto-tiled; an auto-tiled cell
+  on the destination takes the window. One output does nothing.
 
 ---
 
