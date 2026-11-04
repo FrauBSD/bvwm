@@ -265,6 +265,51 @@ AddToFunc   TileSendMon
 + I MoveToScreen $0
 + I PipeRead `fvwm-tile send $[infostore.bvwm_tile_from] $[w.screen] $[w.id] $[monitor.$[w.screen].desk] $[monitor.$[w.screen].pagex] $[monitor.$[w.screen].pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height] $[infostore.bvwm_tile_fs] $[infostore.bvwm_tile_st] $[infostore.bvwm_tile_max] $[infostore.bvwm_tile_sw] $[infostore.bvwm_tile_sh] $[infostore.bvwm_tile_sx] $[infostore.bvwm_tile_sy] $[infostore.bvwm_tile_ww] $[infostore.bvwm_tile_wh] $[infostore.bvwm_tile_wx] $[infostore.bvwm_tile_wy]`
 
+# Super+Ctrl+comma / Super+Ctrl+period: send the focused window to
+# the previous or next desktop. Desks wrap from 0 through count-1.
+# MoveToDesk prev is the last desk visited, so the step is -1 or 1
+# inside that range. One desktop does nothing. The old auto-tile
+# cell reflows. An auto-tile cell on the destination desk takes the
+# window. A manual tile keeps its fractions. A maximized window is
+# maximized there. A window that leaves an auto-tile cell for a desk
+# that is not auto-tiled becomes a normal floating window at the
+# top-left. tile-desk-prev or tile-desk-next is shown on this screen
+# before the window moves. SuperChord runs first so releasing
+# Ctrl and then Super does not open the start menu.
+DestroyFunc TileSendDesk
+AddToFunc   TileSendDesk
++ I SuperChord
++ I ThisWindow (Transient) Break
++ I ThisWindow (CirculateSkip) Break
++ I ThisWindow (!Maximizable) Break
++ I ThisWindow (WindowListSkip) Break
++ I ThisWindow (Sticky) Break
++ I ThisWindow ("florence") Break
++ I ThisWindow ("Florence") Break
++ I ThisWindow ("FvwmPager") Break
++ I ThisWindow ("FvwmButtons") Break
++ I ThisWindow ("Conky") Break
++ I ThisWindow ("Conky*") Break
++ I ThisWindow (EWMHFullscreen) InfoStoreAdd bvwm_tile_fs 1
++ I TestRc (NoMatch) InfoStoreAdd bvwm_tile_fs 0
++ I ThisWindow (State 3) InfoStoreAdd bvwm_tile_st 1
++ I TestRc (NoMatch) InfoStoreAdd bvwm_tile_st 0
++ I ThisWindow (Maximized) InfoStoreAdd bvwm_tile_max 1
++ I TestRc (NoMatch) InfoStoreAdd bvwm_tile_max 0
++ I InfoStoreAdd bvwm_tile_desk $[w.desk]
++ I InfoStoreAdd bvwm_tile_sw $[monitor.$[w.screen].width]
++ I InfoStoreAdd bvwm_tile_sh $[monitor.$[w.screen].height]
++ I InfoStoreAdd bvwm_tile_sx $[monitor.$[w.screen].x]
++ I InfoStoreAdd bvwm_tile_sy $[monitor.$[w.screen].y]
++ I InfoStoreAdd bvwm_tile_ww $[w.width]
++ I InfoStoreAdd bvwm_tile_wh $[w.height]
++ I InfoStoreAdd bvwm_tile_wx $[w.x]
++ I InfoStoreAdd bvwm_tile_wy $[w.y]
+# Paint before MoveToDesk. bosd returns when the daemon accepts
+# the show, so the pause lets that overlay map on this screen.
++ I PipeRead `if [ $[desk.count] -le 1 ]; then echo Nop; exit 0; fi; bosd -S focus tile-desk-$0 2; sleep 0.1; if [ $0 = next ]; then echo "MoveToDesk 1 0 $(( $[desk.count] - 1 ))"; else echo "MoveToDesk -1 0 $(( $[desk.count] - 1 ))"; fi`
++ I PipeRead `fvwm-tile desk $[infostore.bvwm_tile_desk] $[w.desk] $[w.id] $[w.screen] $[w.pagex] $[w.pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height] $[infostore.bvwm_tile_fs] $[infostore.bvwm_tile_st] $[infostore.bvwm_tile_max] $[infostore.bvwm_tile_sw] $[infostore.bvwm_tile_sh] $[infostore.bvwm_tile_sx] $[infostore.bvwm_tile_sy] $[infostore.bvwm_tile_ww] $[infostore.bvwm_tile_wh] $[infostore.bvwm_tile_wx] $[infostore.bvwm_tile_wy]`
+
 # Close is the Alt+F4 action. A bare Close here asks for a click:
 # the key has no window. Current names the focus.
 # CirculateSkip keeps the pager and the taskbar. SuperChord runs
@@ -288,6 +333,7 @@ AddToFunc   BvwmXTerm
 # Super+Ctrl+Left/Right: bottom quarters.
 # Super+Ctrl+Up: insert into layout, or rotate/swap the focused window.
 # Super+Ctrl+Down: previous cell (floating), or eject (auto-tile).
+# Super+Ctrl+comma / Super+Ctrl+period: previous or next desktop.
 # Super+Tab / Super+Shift+Tab: cycle focus (no WindowList).
 # Super+` / Super+Shift+`: same, limited to the focused window's class.
 # Super+W: close the focused window (Alt+F4). A tile has no close
@@ -315,6 +361,8 @@ Key comma	A MS	-
 Key period	A MS	-
 Key comma	A 4S	Current TileSendMon prev
 Key period	A 4S	Current TileSendMon next
+Key comma	A 4C	Current TileSendDesk prev
+Key period	A 4C	Current TileSendDesk next
 Key Tab		A 4	SuperTab
 Key Tab		A 4S	SuperTabBack
 Key ISO_Left_Tab	A 4	SuperTabBack

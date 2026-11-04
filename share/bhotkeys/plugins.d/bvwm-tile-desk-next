@@ -1,0 +1,13 @@
+id bvwm-tile-desk-next
+group x11-wm/bvwm
+label Send to next desktop
+chord Super+Ctrl+period
+enabled 0
+enabled 1 bvwm
+session 0
+session 1 bvwm
+command Current TileSendDesk next
+repeat 0
+greeter 0
+listen 0
+desc Send the focused window to the next desktop. Desks wrap. bvwm owns the key.

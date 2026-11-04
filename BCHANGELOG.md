@@ -5,6 +5,21 @@ BVWM-only release notes. Upstream fvwm3 history stays in [`CHANGELOG.md`](./CHAN
 Format: newest first. Versions are labeled relative to the upstream tag we branched
 from (e.g. `1.1.5`) plus BVWM notes.
 
+## 1.1.5-bvwm.11
+
+### Added
+
+- **Super+Ctrl+comma** and **Super+Ctrl+period** in `default-config/tiling`
+  send the focused window to the previous or next desktop. Desks
+  wrap from 0 through the last one. One desktop does nothing. The
+  cell it left reflows when it was auto-tiled; an auto-tiled cell
+  on the destination desk takes the window. A window that leaves
+  an auto-tiled cell for a desk that is not auto-tiled becomes a
+  normal floating window at the top-left. `tile-desk-prev` or
+  `tile-desk-next` is shown on the current screen before the
+  window moves. `share/bhotkeys/plugins.d/bvwm-tile-desk-prev`
+  and `bvwm-tile-desk-next` catalog the chords. bvwm owns the keys.
+
 ---
 
 ## 1.1.5-bvwm.10
