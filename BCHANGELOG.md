@@ -10,12 +10,14 @@ from (e.g. `1.1.5`) plus BVWM notes.
 ### Added
 
 - **Super+Ctrl+comma** and **Super+Ctrl+period** in `default-config/tiling`
-  send the focused window to the previous or next desktop. Desks
-  wrap from 0 through the last one. One desktop does nothing. The
-  cell it left reflows when it was auto-tiled; an auto-tiled cell
-  on the destination desk takes the window. A window that leaves
-  an auto-tiled cell for a desk that is not auto-tiled becomes a
-  normal floating window at the top-left. `tile-desk-prev` or
+  send the focused window to the previous or next pager cell.
+  Named desks are walked when there is more than one. Otherwise
+  the pager pages are walked left to right, then top to bottom,
+  and they wrap. One cell does nothing. The cell it left reflows
+  when it was auto-tiled; an auto-tiled cell on the destination
+  takes the window. A window that leaves an auto-tiled cell for
+  a cell that is not auto-tiled becomes a normal floating window.
+  `tile-desk-prev` or
   `tile-desk-next` is shown on the current screen before the
   window moves. `share/bhotkeys/plugins.d/bvwm-tile-desk-prev`
   and `bvwm-tile-desk-next` catalog the chords. bvwm owns the keys.

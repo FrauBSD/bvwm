@@ -266,16 +266,18 @@ AddToFunc   TileSendMon
 + I PipeRead `fvwm-tile send $[infostore.bvwm_tile_from] $[w.screen] $[w.id] $[monitor.$[w.screen].desk] $[monitor.$[w.screen].pagex] $[monitor.$[w.screen].pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height] $[infostore.bvwm_tile_fs] $[infostore.bvwm_tile_st] $[infostore.bvwm_tile_max] $[infostore.bvwm_tile_sw] $[infostore.bvwm_tile_sh] $[infostore.bvwm_tile_sx] $[infostore.bvwm_tile_sy] $[infostore.bvwm_tile_ww] $[infostore.bvwm_tile_wh] $[infostore.bvwm_tile_wx] $[infostore.bvwm_tile_wy]`
 
 # Super+Ctrl+comma / Super+Ctrl+period: send the focused window to
-# the previous or next desktop. Desks wrap from 0 through count-1.
-# MoveToDesk prev is the last desk visited, so the step is -1 or 1
-# inside that range. One desktop does nothing. The old auto-tile
-# cell reflows. An auto-tile cell on the destination desk takes the
-# window. A manual tile keeps its fractions. A maximized window is
-# maximized there. A window that leaves an auto-tile cell for a desk
-# that is not auto-tiled becomes a normal floating window at the
-# top-left. tile-desk-prev or tile-desk-next is shown on this screen
-# before the window moves. SuperChord runs first so releasing
-# Ctrl and then Super does not open the start menu.
+# the previous or next pager cell. Named desks are walked when
+# there is more than one (0 through count-1; MoveToDesk prev is
+# the last desk visited, so the step is -1 or 1). Otherwise the
+# pager pages are walked left to right, then top to bottom, and
+# they wrap. One cell does nothing. The old auto-tile cell
+# reflows. An auto-tile cell on the destination takes the window.
+# A manual tile keeps its fractions. A maximized window is
+# maximized there. A window that leaves an auto-tile cell for a
+# cell that is not auto-tiled becomes a normal floating window.
+# tile-desk-prev or tile-desk-next is shown on this screen before
+# the window moves. SuperChord runs first so releasing Ctrl and
+# then Super does not open the start menu.
 DestroyFunc TileSendDesk
 AddToFunc   TileSendDesk
 + I SuperChord
@@ -297,6 +299,8 @@ AddToFunc   TileSendDesk
 + I ThisWindow (Maximized) InfoStoreAdd bvwm_tile_max 1
 + I TestRc (NoMatch) InfoStoreAdd bvwm_tile_max 0
 + I InfoStoreAdd bvwm_tile_desk $[w.desk]
++ I InfoStoreAdd bvwm_tile_px $[w.pagex]
++ I InfoStoreAdd bvwm_tile_py $[w.pagey]
 + I InfoStoreAdd bvwm_tile_sw $[monitor.$[w.screen].width]
 + I InfoStoreAdd bvwm_tile_sh $[monitor.$[w.screen].height]
 + I InfoStoreAdd bvwm_tile_sx $[monitor.$[w.screen].x]
@@ -307,8 +311,8 @@ AddToFunc   TileSendDesk
 + I InfoStoreAdd bvwm_tile_wy $[w.y]
 # Paint before MoveToDesk. bosd returns when the daemon accepts
 # the show, so the pause lets that overlay map on this screen.
-+ I PipeRead `if [ $[desk.count] -le 1 ]; then echo Nop; exit 0; fi; bosd -S focus tile-desk-$0 2; sleep 0.1; if [ $0 = next ]; then echo "MoveToDesk 1 0 $(( $[desk.count] - 1 ))"; else echo "MoveToDesk -1 0 $(( $[desk.count] - 1 ))"; fi`
-+ I PipeRead `fvwm-tile desk $[infostore.bvwm_tile_desk] $[w.desk] $[w.id] $[w.screen] $[w.pagex] $[w.pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height] $[infostore.bvwm_tile_fs] $[infostore.bvwm_tile_st] $[infostore.bvwm_tile_max] $[infostore.bvwm_tile_sw] $[infostore.bvwm_tile_sh] $[infostore.bvwm_tile_sx] $[infostore.bvwm_tile_sy] $[infostore.bvwm_tile_ww] $[infostore.bvwm_tile_wh] $[infostore.bvwm_tile_wx] $[infostore.bvwm_tile_wy]`
++ I PipeRead `nd=$[desk.count]; nx=$[desk.pagesx]; ny=$[desk.pagesy]; n=$((nx * ny)); if [ "$nd" -le 1 ] && [ "$n" -le 1 ]; then echo Nop; exit 0; fi; bosd -S focus tile-desk-$0 2; sleep 0.1; if [ "$nd" -gt 1 ]; then max=$((nd - 1)); if [ $0 = next ]; then echo "MoveToDesk 1 0 $max"; else echo "MoveToDesk -1 0 $max"; fi; exit 0; fi; idx=$(( $[w.pagex] + $[w.pagey] * nx )); if [ $0 = next ]; then idx=$(((idx + 1) % n)); else idx=$(((idx + n - 1) % n)); fi; echo "MoveToPage $((idx % nx)) $((idx / nx))"`
++ I PipeRead `fvwm-tile desk $[infostore.bvwm_tile_desk] $[w.desk] $[w.id] $[w.screen] $[w.pagex] $[w.pagey] $[monitor.$[w.screen].width] $[monitor.$[w.screen].height] $[monitor.primary] $[taskbar_h] $[monitor.$[w.screen].x] $[monitor.$[w.screen].y] $[vp.width] $[vp.height] $[infostore.bvwm_tile_fs] $[infostore.bvwm_tile_st] $[infostore.bvwm_tile_max] $[infostore.bvwm_tile_sw] $[infostore.bvwm_tile_sh] $[infostore.bvwm_tile_sx] $[infostore.bvwm_tile_sy] $[infostore.bvwm_tile_ww] $[infostore.bvwm_tile_wh] $[infostore.bvwm_tile_wx] $[infostore.bvwm_tile_wy] $[infostore.bvwm_tile_px] $[infostore.bvwm_tile_py]`
 
 # Close is the Alt+F4 action. A bare Close here asks for a click:
 # the key has no window. Current names the focus.

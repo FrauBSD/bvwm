@@ -10,4 +10,4 @@ command Current TileSendDesk prev
 repeat 0
 greeter 0
 listen 0
-desc Send the focused window to the previous desktop. Desks wrap. bvwm owns the key.
+desc Send the focused window to the previous pager cell. Named desks are used when there is more than one. bvwm owns the key.

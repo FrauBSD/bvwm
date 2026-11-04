@@ -1356,18 +1356,19 @@ EOF
 }
 
 #
-# Window already moved (MoveToDesk, wrapping 0 .. count-1). Drop it
-# from the old desk's cell. Fullscreen stays fullscreen. An auto-tile
-# cell on the destination desk takes the window and reflows. A manual
-# tile keeps its fractions. A plain maximize fills this output. A
-# window that left an auto-tile cell for a desk that is not auto-tiled
-# becomes a normal floating window at the top-left. The same desk is
-# a no-op. The glyph is shown before MoveToDesk.
+# Window already moved (MoveToDesk, or MoveToPage across the pager).
+# Drop it from the old cell. Fullscreen stays fullscreen. An
+# auto-tile cell on the destination takes the window and reflows.
+# A manual tile keeps its fractions. A plain maximize fills this
+# output. A window that left an auto-tile cell for a desk that is
+# not auto-tiled becomes a normal floating window at the top-left.
+# A page move keeps the position MoveToPage already chose. The
+# same cell is a no-op. The glyph is shown before the move.
 #
 cmd_desk()
 {
-	local _from _to _id _mon _slot _w _h _old _fs _st _max _pf
-	local _hp _vp _xp _yp
+	local _from _to _id _mon _slot _fromslot _w _h _old _fs _st _max
+	local _pf _hp _vp _xp _yp _opx _opy
 
 	_from="$1"
 	_to="$2"
@@ -1378,6 +1379,8 @@ cmd_desk()
 	_fs="${15}"
 	_st="${16}"
 	_max="${17}"
+	_opx="${26}"
+	_opy="${27}"
 	remember_strut "$9" "${10}"
 	remember_view "$_mon" "${11}" "${12}" "${13}" "${14}"
 
@@ -1385,11 +1388,14 @@ cmd_desk()
 		echo Nop
 		return 0
 	}
-	if [ "$_from" = "$_to" ]; then
+	[ "$_opx" ] || _opx="$5"
+	[ "$_opy" ] || _opy="$6"
+	_fromslot=$( make_slot "$_mon" "$_from" "$_opx" "$_opy" )
+	_slot=$( make_slot "$_mon" "$_to" "$5" "$6" )
+	if [ "$_fromslot" = "$_slot" ]; then
 		echo Nop
 		return 0
 	fi
-	_slot=$( make_slot "$_mon" "$_to" "$5" "$6" )
 	_old=$( forget_id "$_id" )
 	if [ "$_old" ]; then
 		retile_slot "$_old"
@@ -1403,15 +1409,16 @@ cmd_desk()
 		retile_slot "$_slot"
 		return 0
 	fi
-	#
-	# Left an auto-tile for a floating desk. Move with no
-	# position is an interactive drag; +0 +0 is this page's
-	# origin. desk keeps the window on the desk already chosen.
-	#
 	if [ "$_old" ]; then
 		rm -f "$( pct_file "$_id" )"
 		emit_restore "$_id"
-		echo "WindowId $_id Move screen $_mon desk $_to +0 +0"
+		#
+		# +0 +0 is this page's origin. A page move has already
+		# landed on the destination cell.
+		#
+		if [ "$_from" != "$_to" ]; then
+			echo "WindowId $_id Move screen $_mon desk $_to +0 +0"
+		fi
 		return 0
 	fi
 	_pf=$( pct_file "$_id" )
@@ -1525,7 +1532,7 @@ send)
 	cmd_send "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}" "${15}" "${16}" "${17}" "${18}" "${19}" "${20}" "${21}" "${22}" "${23}" "${24}" "${25}"
 	;;
 desk)
-	cmd_desk "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}" "${15}" "${16}" "${17}" "${18}" "${19}" "${20}" "${21}" "${22}" "${23}" "${24}" "${25}"
+	cmd_desk "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}" "${15}" "${16}" "${17}" "${18}" "${19}" "${20}" "${21}" "${22}" "${23}" "${24}" "${25}" "${26}" "${27}"
 	;;
 *)
 	usage
